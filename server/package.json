@@ -1,0 +1,26 @@
+{
+  "name": "websiteserver",
+  "version": "1.0.0",
+  "description": "Reworking website with micro-service architecture",
+  "homepage": "https://github.com/TeejMcSteez/WebsiteRebuild#readme",
+  "bugs": {
+    "url": "https://github.com/TeejMcSteez/WebsiteRebuild/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TeejMcSteez/WebsiteRebuild.git"
+  },
+  "license": "ISC",
+  "author": "TeejMcSteez",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "ollama": "^0.5.12",
+    "redis": "^4.7.0"
+  }
+}

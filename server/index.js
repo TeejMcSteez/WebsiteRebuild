@@ -22,14 +22,16 @@ const ollama = new Ollama({
     host: 'http://localhost:11434',
 });
 
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173' // Adjust the port if your SvelteKit app runs on a different port
+}));
 app.use(server.json());
 
 // Save chat session
 app.post('/API/saveChat', async (req, res) => {
-    const { chatId, messages } = req.body;
+    const { chatId, messages } = req.body; // Is already stringified on send
     try {
-        await redisClient.set(chatId, JSON.stringify(messages));
+        await redisClient.set(chatId, messages);
         res.json({ success: true });
     } catch (error) {
         console.error('Error saving chat:', error);

@@ -49,7 +49,7 @@
     </div>
 
     <form on:submit|preventDefault={sendMessage} class="flex space-x-2">
-        <input type="text" bind:value={message} placeholder="Type your message..." class="border p-2" />
+        <input type="text" bind:value={message} placeholder="Type your message..." class="border p-2" required/>
         <button type="submit" class="bg-blue-500 text-white p-2 rounded">Send</button>
     </form>
     

@@ -1,11 +1,26 @@
 <script>
+    /**
+     * TODO: 
+     * 1. Create buttons to choose chat model
+     * 2. A sidebar with past conversation names pulled from redis
+     * 3. Make chat UI better and add the ability for dark mode? maybe
+     * 4. Block input after message is sen't
+     */
     let message = '';
     let chatResponse = '';
     let showModal = false;
     let chatName = '';
+    /**
+     * @type {string[]}
+     */
+    let messageList = [];
+
+    let responses = [];
 
     async function sendMessage() {
         console.log("Message Received: ", message);
+        messageList.push(message);
+
         const response = await fetch('http://localhost:3000/API/chat1.5b', {
             method: 'POST',
             headers: {
@@ -16,6 +31,7 @@
 
         const data = await response.json();
         chatResponse = data.message;
+        responses.push(chatResponse);
     }
 
     function openModal() {
@@ -42,10 +58,9 @@
 </script>
 
 <main class="flex flex-col items-center justify-center space-y-4">
-    <div id="chatBox" class="w-80 h-80 border p-4">
-        {#if chatResponse}
-            <p>{chatResponse}</p>
-        {/if}
+    <div id="chatBox" class="w-80 h-80 border p-4 overflow-scroll">
+        
+        
     </div>
 
     <form on:submit|preventDefault={sendMessage} class="flex space-x-2">

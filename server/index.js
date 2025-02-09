@@ -27,7 +27,7 @@ app.use(cors({
 }));
 app.use(server.json());
 
-// Save chat session
+// TODO: change chat saving to be much more robust or atleat easier to read
 app.post('/API/saveChat', async (req, res) => {
     const { chatId, messages } = req.body; // Is already stringified on send
     try {

@@ -1,4 +1,16 @@
 <script>
+
+    /**
+     * TODO: Find a way to type the about me section
+     * 2. Add a picture of me to the landing page and rework the landing page around the picture
+     * 3. Make project section look better and have more recent projects
+     * 4. Make Website more interactive?
+     * 5. Add a blog section to the website
+     * 6. Add a section for my resume
+     * 7. Add animations?
+    */
+
+    // Svelte    
     
     import { onMount } from 'svelte';
     import { animate, time } from 'motion';
@@ -59,7 +71,7 @@
                     clearInterval(interval);
                 }
             }, timeout);
-        }, 1000);       
+        }, 500);       
     }
 
 </script>

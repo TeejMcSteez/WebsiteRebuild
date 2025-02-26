@@ -2,6 +2,11 @@
  * TODO: Write routes for frontend API for different services. 
  * I can either group services in different files with functions or write them here. 
  * Add listener function for server to listen for requests from the frontend server.
+ * 
+ * 1. If I am going to write a blog I need a way to write and save posts easily. 
+ *   I can use markdown for the posts and save them in a database.
+ *   Grab the markdown file and send it to the frontend to render.
+ *   Think of a decent way to add the markdown file to the database.
  */
 const { Ollama } = require('ollama');
 const path = require('node:path');

@@ -1,13 +1,13 @@
 <script>
 
     /**
-     * TODO: Find a way to type the about me section
-     * 2. Add a picture of me to the landing page and rework the landing page around the picture
-     * 3. Make project section look better and have more recent projects
-     * 4. Make Website more interactive?
-     * 5. Add a blog section to the website
-     * 6. Add a section for my resume
-     * 7. Add animations?
+     * TODO:
+     * 1. Add a picture of me to the landing page and rework the landing page around the picture
+     * 2. Make project section look better and have more recent projects
+     * 3. Make Website more interactive?
+     * 4. Add a blog section to the website
+     * 5. Add a section for my resume
+     * 6. Add animations?
     */
 
     // Svelte    
@@ -18,7 +18,6 @@
     import distanceDoorSesnsor from '$lib/assets/distanceDoorSesnsor.png';
     import exampleSRSM from '$lib/assets/exampleSRSM.png';
     import loginSucc from '$lib/assets/loginSuccesfful.png';
-    import { once } from 'svelte/legacy';
     
     /** @type {HTMLElement[]} */
     let sections = [];
@@ -135,8 +134,10 @@
             <h2>Thank you for visiting my website!</h2>
             <h2>Feel free to check out my contact page for more information on how to reach me!</h2>
         </div>
-        <button onclick={scrollToTop} class="text-center bg-zinc-900 text-white p-4 m-4 rounded-xl justify-center items-center hover:bg-red-800 hover:animate-pulse">Scroll To Top</button>
     </section>
 
+    <button onclick={scrollToTop} class="text-center bg-zinc-900 text-white p-4 m-4 rounded-xl justify-center items-center hover:bg-red-800 hover:animate-pulse">Scroll To Top</button>
+
+    
 
 </div>

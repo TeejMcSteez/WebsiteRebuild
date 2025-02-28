@@ -2,7 +2,9 @@
 
    import { goto } from "$app/navigation";
    import { onMount } from "svelte";
-
+   /**
+    * @type {Array<{slug: string}>}
+    */
    let blogs = [];
    let blogTitlePath = "http://localhost:3000/api/blogs";
 
@@ -11,7 +13,10 @@
       blogs = await res.json();
       console.log(blogs);
    });
-
+   /**
+    * 
+    * @param blogSlug {string}
+    */
    async function getBlog(blogSlug) {
       await goto(`/blog/${blogSlug}`);
    }
@@ -35,9 +40,13 @@
    
    <div id="blogPostSection" class="m-5 p-10 text-2xl text-white flex flex-col items-center justify-center">
       <ul>
+         {#if !blogs}
+            <h2 class="flex flex-col text-white text-2xl items-center jusitfy-center bg-zinc-500">Please come back later for some new posts!</h2>
+         {/if}
          {#each blogs as blog}
-            <li><button on:click={() => getBlog(blog.slug)} on:keydown={(e) => e.key === 'Enter' && getBlog(blog.slug)} class="text-white m-5 p-2 text-2xl">{blog.slug}</button></li>
+            <li><button on:click={() => getBlog(blog.slug)} on:keydown={(e) => e.key === 'Enter' && getBlog(blog.slug)} class="text-white m-2 p-2 text-2xl bg-zinc-700 hover:bg-zinc-300 hover:animate-pulse rounded-xl">{blog.slug}</button></li>
          {/each}
+         
       </ul>
    </div>
 </div>

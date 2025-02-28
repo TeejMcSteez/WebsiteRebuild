@@ -1,11 +1,19 @@
 <script>
 
    import { goto } from "$app/navigation";
+   import { onMount } from "svelte";
 
-   async function getBlog() {
-      const res = await fetch('http://localhost:3000/blog');
-      const data = await res.json();
-      console.log(data);
+   let blogs = [];
+   let blogTitlePath = "http://localhost:3000/api/blogs";
+
+   onMount(async () => {
+      const res = await fetch(blogTitlePath);
+      blogs = await res.json();
+      console.log(blogs);
+   });
+
+   async function getBlog(blogSlug) {
+      await goto(`/blog/${blogSlug}`);
    }
 </script>
 <!-- TODO:
@@ -26,6 +34,10 @@
    </div>
    
    <div id="blogPostSection" class="m-5 p-10 text-2xl text-white flex flex-col items-center justify-center">
-      <h1>Figure out a smart way to actually get blogs and post them to the landing page and then find a sensible way for the user to the view the blog which will be in markdown with either loading a new window or re-rendering the page somehow</h1>
+      <ul>
+         {#each blogs as blog}
+            <li><button on:click={() => getBlog(blog.slug)} on:keydown={(e) => e.key === 'Enter' && getBlog(blog.slug)} class="text-white m-5 p-2 text-2xl">{blog.slug}</button></li>
+         {/each}
+      </ul>
    </div>
 </div>

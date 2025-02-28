@@ -23,6 +23,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"marked": "^15.0.7",
 		"motion": "^12.4.1"
 	}
 }

@@ -5,20 +5,19 @@
      * 2. Add a picture of me to the landing page and rework the landing page around the picture
      * 3. Make project section look better and have more recent projects
      * 4. Make Website more interactive?
-     * 5. Add a blog section to the website
+     * 5. Add a blog section to the website ✅.
      * 6. Add a section for my resume
      * 7. Add animations?
     */
 
     // Svelte    
-    
     import { onMount } from 'svelte';
     import { animate, time } from 'motion';
     // Photos
     import distanceDoorSesnsor from '$lib/assets/distanceDoorSesnsor.png';
     import exampleSRSM from '$lib/assets/exampleSRSM.png';
     import loginSucc from '$lib/assets/loginSuccesfful.png';
-    import { once } from 'svelte/legacy';
+    import me from '$lib/assets/ME.png';
     
     /** @type {HTMLElement[]} */
     let sections = [];
@@ -40,11 +39,11 @@
         );
         sections.forEach(section => observer.observe(section));
     });
-
+    
     function scrollToTop() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-
+    // Types header to the about me section when user scrolls to it
     function typeAbout() {
         const aboutChar = "About Me";
         const timeout = 30;
@@ -88,7 +87,8 @@
     <div id="line" class="m-px p-px bg-red-800 min-w-screen"></div>
     <!-- Figure out how I want sectioning, Depending on how I want to the website to feel -->
     <section bind:this={sections[0]} style="opacity: 0;" class="min-w-screen min-h-screen m-5 p-2 flex flex-col items-center justify-center">
-        <div id="container" class="m-4 p-2 bg-zinc-900 rounded-xl">
+        <div id="container" class="m-4 p-2 bg-zinc-900 rounded-xl relative">
+            <img src={me} alt="Me" class="absolute top-0 right-0 w-32 h-32 rounded-full border-4 border-none transform translate-x-1/4 -translate-y-1/4 z-8">
             <div id="intro" class="text-white p-4 m-4 text-center">
                 <h2 class="m-4 text-2xl">Hello my name is Tommy Hall!</h2>
                 <h2 class="m-4 text-2xl">I am currently a student at UNCC</h2>

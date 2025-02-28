@@ -28,7 +28,7 @@ db.exec(`CREATE TABLE IF NOT EXISTS comments (
 
 // Called to insert a comment with title of post and comment
 
-const insertComment = db.prepare(`INSERT INTO comments (postSlug, comment) VALUES (?, ?, ?)`);
+const insertComment = db.prepare(`INSERT INTO comments (postSlug, comment) VALUES (?, ?)`);
 
 const POSTS_DIR = path.join(__dirname, 'posts');
 
@@ -69,18 +69,21 @@ app.get('/api/blogs/:slug/comments', (req, res) => {
     const response = db.prepare(`SELECT * FROM comments WHERE postSlug = ?`);
     const comments = response.all(req.params.slug);
     
-    db.close();
     res.json(comments);
 });
 // add comment handler for blog
-app.get('/api/blogs/:slug/addComment', (req, res) => {
-    const {slug} = req.params;
-    const {comment} = req.body;
+app.post('/api/blogs/:slug/addComment', (req, res) => {
+    const { slug } = req.params;
+    const { comment } = req.body;
+
+    if (!comment) {
+        res.status(400).json({ message: 'Comment is required' });
+        return;
+    }
 
     insertComment.run(slug, comment);
     
-    db.close();
-    res.json({message: 'Comment added'});
+    res.json({ message: 'Comment added' });
 });
 
 // 404 Handler

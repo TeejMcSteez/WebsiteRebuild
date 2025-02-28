@@ -14,6 +14,21 @@ const cors = require('cors');
 const fs = require('node:fs');
 const matter = require('gray-matter');
 const app = server();
+const Database = require('better-sqlite3');
+
+const db = new Database('database.db');
+
+// Create a table for posts if they dont exist
+db.exec(`CREATE TABLE IF NOT EXISTS comments (
+    id INTEGER PRIMARY KEY,
+    postSlug TEXT,
+    comment TEXT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP    
+)`);
+
+// Called to insert a comment with title of post and comment
+
+const insertComment = db.prepare(`INSERT INTO comments (postSlug, comment) VALUES (?, ?, ?)`);
 
 const POSTS_DIR = path.join(__dirname, 'posts');
 
@@ -21,7 +36,7 @@ app.use(cors());
 app.use(server.json());
 
 //routes
-
+// gets all blog titles
 app.get('/api/blogs', (req, res) => {
     const files = fs.readdirSync(POSTS_DIR);
     const posts = files.map(file => {
@@ -38,7 +53,7 @@ app.get('/api/blogs', (req, res) => {
     });
     res.json(posts);
 });
-
+// Gets a single blog content
 app.get('/api/blogs/:slug', (req, res) => {
     const filePath = path.join(POSTS_DIR, `${req.params.slug}.md`);
 
@@ -48,6 +63,24 @@ app.get('/api/blogs/:slug', (req, res) => {
     }
     const content = fs.readFileSync(filePath, 'utf-8');
     res.json({content});
+});
+// Gets all comments for a blog
+app.get('/api/blogs/:slug/comments', (req, res) => {
+    const response = db.prepare(`SELECT * FROM comments WHERE postSlug = ?`);
+    const comments = response.all(req.params.slug);
+    
+    db.close();
+    res.json(comments);
+});
+// add comment handler for blog
+app.get('/api/blogs/:slug/addComment', (req, res) => {
+    const {slug} = req.params;
+    const {comment} = req.body;
+
+    insertComment.run(slug, comment);
+    
+    db.close();
+    res.json({message: 'Comment added'});
 });
 
 // 404 Handler

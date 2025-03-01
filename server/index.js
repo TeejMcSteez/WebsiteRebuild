@@ -1,7 +1,12 @@
 /**
- * 1. Add GitHub hook to automatically pull posts directory from GitHub to the server
- * 2. Add OAuth2.0 for the admin panel access to the supabase database.
+ * TODO: Write routes for frontend API for different services. 
+ * I can either group services in different files with functions or write them here. 
+ * Add listener function for server to listen for requests from the frontend server.
  * 
+ * 1. If I am going to write a blog I need a way to write and save posts easily. 
+ *   I can use markdown for the posts and save them in a database.
+ *   Grab the markdown file and send it to the frontend to render.
+ *   Think of a decent way to add the markdown file to the database.
  */
 const path = require('node:path');
 const server = require('express');
@@ -10,6 +15,7 @@ const fs = require('node:fs');
 const matter = require('gray-matter');
 const app = server();
 const { createClient } = require('@supabase/supabase-js');
+const { error } = require('node:console');
 
 // Called to insert a comment with title of post and comment
 
@@ -21,10 +27,7 @@ const supabase = createClient('https://dzqcqtucdqznjvagxmhj.supabase.co', 'eyJhb
 
 app.use(cors());
 app.use(server.json());
-/**
- * Gets all the blog titles from the posts directory
- * @returns {array<string>} returns an array of blog titles
- */
+
 function getBlogTitles() {
     const blogTitles = fs.readdirSync(POSTS_DIR);
     return blogTitles;
@@ -44,12 +47,13 @@ function getBlogPost(title) {
 //routes
 app.get('/api/blogTitles', (req, res) => {
     const blogTitles = getBlogTitles();
-    res.json(blogTitles); // Return the blog titles as a JSON response
+
+    console.log(blogTitles);
 });
 
-app.get('/api/blogPost/:title', async (req, res) => {
+app.get('/api/blogPost/:title', (req, res) => {
     const title = req.params.title;
-    const blogPost = getBlogPost(title);
+    const blogPost = getBlogPost(title.concat('.md'));
 
     console.log(blogPost);
 
@@ -58,39 +62,22 @@ app.get('/api/blogPost/:title', async (req, res) => {
     console.log(blogPost.slug);
 
     // send the blog post to front end database
-    const { data, error } = await supabase
+    const {data, error} = supabase
         .from('blogs')
         .insert([
             {
                 slug: blogPost.slug.replace('.md', ''),
-                content: blogPost.content.content,
-                comments: null // comments are nullable
+                content: blogPost.content.content
             }
         ]);
     if (error) {
         console.log(error);
-        res.json({ error: error });
+        res.json({error: error});
     } else {
         console.log('Data inserted successfully: ', data);
-        res.json({ data: data });
+        res.json({data: data});
     }     
-});
-
-app.get('/api/database/titles', async (req, res) => {
-    const { data, error } = await supabase
-        .from('blogs')
-        .select('slug'); // Select only the slug column
-    if (error) {
-        console.log(error);
-        res.json({ error: error });
-    } else {
-        console.log(`Titles: ${data}`);
-        res.json(data); // Return the data directly
-    }
-});
-
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    
 });
 
 // 404 Handler

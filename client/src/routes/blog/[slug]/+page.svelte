@@ -2,64 +2,79 @@
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { marked } from 'marked';
-    import {API_PATH} from '$lib/index.js'
 
     /**
      * @type Array<{comment: string, timestamp: string}>
     */
-    let blogCommentJson = [];
+    let blogCommentJson;
     let blogContent = '';
     let blogTitle = '';
     let comment = '';
 
     $: slug = $page.params.slug;
 
-   import { createClient } from '@supabase/supabase-js'
-   const supabase = createClient('https://dzqcqtucdqznjvagxmhj.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cWNxdHVjZHF6bmp2YWd4bWhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4MDE5OTUsImV4cCI6MjA1NjM3Nzk5NX0.iUdqHG_dvoEfqndwfgqhz1ikik7H7PPk2okKlz8xlb8');
-
-   
+    import { createClient } from '@supabase/supabase-js'
+    const supabase = createClient('https://dzqcqtucdqznjvagxmhj.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cWNxdHVjZHF6bmp2YWd4bWhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4MDE5OTUsImV4cCI6MjA1NjM3Nzk5NX0.iUdqHG_dvoEfqndwfgqhz1ikik7H7PPk2okKlz8xlb8');
 
     onMount(async () => {
-        // get blogs from supabase db
         const { data, error } = await supabase
             .from('blogs')
-            .select('slug, content, comments');
+            .select('slug, content, comments')
+            .eq('slug', slug)
+            .single();
+        
         if (error) {
-            console.log(error);
+            console.log('Error fetching blog:', error);
+            blogTitle = slug;
+            blogContent = '<h1>Blog not found</h1>';
         } else {
-            let blog = data.find(blog => blog.slug === slug);
-            if (blog) {
-                blogContent = await marked(blog.content);
-                blogTitle = blog.slug;
-                blogCommentJson = blog.comments;
-
-                console.log(`Data for ${slug} found: ${data}, Content: ${blogContent}, Comments: ${blogCommentJson}`)
-            } else {
-                console.log('blog not found');
-                blogTitle = slug;
-                blogContent = '<h1>Blog not found</h1>';
+            console.log('Fetched blog data:', data);
+            blogContent = await marked(data.content);
+            blogTitle = data.slug;
+            // Parse comments if they're stored as a string
+            try {
+                blogCommentJson = typeof data.comments === 'string' 
+                    ? JSON.parse(data.comments) 
+                    : (data.comments || []);
+                console.log('Parsed comments:', blogCommentJson);
+            } catch (e) {
+                console.error('Error parsing comments:', e);
+                blogCommentJson = [];
             }
         }
-            
     });
-   
-    /**
-    * 
-    * @param blogSlug {string}
-    */
 
-   async function submitComment() {
-        // insertComment into supabase db
+    async function submitComment() {
+        if (!comment.trim()) return;
+        
+        const newComment = { 
+            comment: comment.trim(), 
+            timestamp: new Date().toUTCString() 
+        };
+        
+        const updatedComments = [...blogCommentJson, newComment];
+        
         const { data, error } = await supabase
             .from('blogs')
             .update({
-                comments: [comment]
-            });
+                comments: JSON.stringify(updatedComments) // Stringify before saving
+            })
+            .eq('slug', slug)
+            .select()
+            .single();
+
         if (error) {
-            console.log(error);
+            console.log('Error submitting comment:', error);
         } else {
-            console.log(data);
-            blogCommentJson.push({comment: comment, timestamp: new Date().toUTCString()});
+            // Parse the comments after update
+            try {
+                blogCommentJson = typeof data.comments === 'string'
+                    ? JSON.parse(data.comments)
+                    : (data.comments || []);
+                comment = '';
+            } catch (e) {
+                console.error('Error parsing updated comments:', e);
+            }
         }
     }
 </script>

@@ -47,37 +47,54 @@ function getBlogPost(title) {
 //routes
 app.get('/api/blogTitles', (req, res) => {
     const blogTitles = getBlogTitles();
-
-    console.log(blogTitles);
+    res.json(blogTitles);
 });
 
-app.get('/api/blogPost/:title', (req, res) => {
-    const title = req.params.title;
-    const blogPost = getBlogPost(title.concat('.md'));
+app.get('/api/database/titles', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('blogs')
+            .select('slug');
+        
+        if (error) throw error;
+        res.json(data);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+});
 
-    console.log(blogPost);
+app.get('/api/blogPost/:title', async (req, res) => {
+    try {
+        const title = req.params.title;
+        const blogPost = getBlogPost(title.concat('.md'));
 
-    console.log(blogPost.content.content);
+        // send the blog post to front end database
+        const { data, error } = await supabase
+            .from('blogs')
+            .insert([
+                {
+                    slug: blogPost.slug.replace('.md', ''),
+                    content: blogPost.content.content
+                }
+            ])
+            .select();
 
-    console.log(blogPost.slug);
+        if (error) {
+            console.error(error);
+            return res.status(500).json({ error: error });
+        }
 
-    // send the blog post to front end database
-    const {data, error} = supabase
-        .from('blogs')
-        .insert([
-            {
-                slug: blogPost.slug.replace('.md', ''),
-                content: blogPost.content.content
-            }
-        ]);
-    if (error) {
-        console.log(error);
-        res.json({error: error});
-    } else {
         console.log('Data inserted successfully: ', data);
-        res.json({data: data});
-    }     
-    
+        res.json({ data: data });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // 404 Handler

@@ -4,50 +4,62 @@
     import { marked } from 'marked';
     import {API_PATH} from '$lib/index.js'
 
+    /**
+     * @type Array<{comment: string, timestamp: string}>
+    */
+    let blogCommentJson = [];
     let blogContent = '';
     let blogTitle = '';
     let comment = '';
 
     $: slug = $page.params.slug;
 
+   import { createClient } from '@supabase/supabase-js'
+   const supabase = createClient('https://dzqcqtucdqznjvagxmhj.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cWNxdHVjZHF6bmp2YWd4bWhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4MDE5OTUsImV4cCI6MjA1NjM3Nzk5NX0.iUdqHG_dvoEfqndwfgqhz1ikik7H7PPk2okKlz8xlb8');
+
+   
+
     onMount(async () => {
-        const res = await fetch(`${API_PATH}/blogs/${slug}`);
-        const data = await res.json();
-        blogContent = await marked(data.content);
-        blogTitle = data.title;
-        getBlogComments(slug);
+        // get blogs from supabase db
+        const { data, error } = await supabase
+            .from('blogs')
+            .select('slug, content, comments');
+        if (error) {
+            console.log(error);
+        } else {
+            let blog = data.find(blog => blog.slug === slug);
+            if (blog) {
+                blogContent = await marked(blog.content);
+                blogTitle = blog.slug;
+                blogCommentJson = blog.comments;
+
+                console.log(`Data for ${slug} found: ${data}, Content: ${blogContent}, Comments: ${blogCommentJson}`)
+            } else {
+                console.log('blog not found');
+                blogTitle = slug;
+                blogContent = '<h1>Blog not found</h1>';
+            }
+        }
+            
     });
-    /**
-     * @type Array<{id: number, comment: string, timestamp: string}>
-     */
-    let blogCommentJson = [];
+   
     /**
     * 
     * @param blogSlug {string}
     */
-   async function getBlogComments(blogSlug) {
-      // fetch comments from the node server
-      const res = await fetch(`${API_PATH}/blogs/${blogSlug}/comments`);
-      const comments = await res.json();
-      blogCommentJson = comments;
-      console.log(comments);
-   }
 
    async function submitComment() {
-        const encodedSlug = encodeURIComponent(slug);
-        const res = await fetch(`${API_PATH}/blogs/${encodedSlug}/addComment`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ comment })
-        });
-        if (res.ok) {
-            comment = '';
-            // Oeptionally, refresh comments
-            await getBlogComments(slug);
+        // insertComment into supabase db
+        const { data, error } = await supabase
+            .from('blogs')
+            .update({
+                comments: [comment]
+            });
+        if (error) {
+            console.log(error);
         } else {
-            console.error('Failed to submit comment', res.status, res.statusText);
+            console.log(data);
+            blogCommentJson.push({comment: comment, timestamp: new Date().toUTCString()});
         }
     }
 </script>
@@ -77,6 +89,6 @@
     <div id="addCommentSection" class="p-5">
         <h2 class="text-2xl text-white">Add a Comment</h2>
         <textarea bind:value={comment} class="w-full p-2 rounded-md" rows="4" placeholder="Write your comment here..."></textarea>
-        <button on:click={submitComment} class="mt-2 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-700">Submit</button>
+        <button on:click={() => submitComment()} class="mt-2 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-700">Submit</button>
     </div>
 </div>

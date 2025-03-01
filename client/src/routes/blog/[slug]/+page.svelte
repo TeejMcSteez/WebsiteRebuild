@@ -2,6 +2,7 @@
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { marked } from 'marked';
+    import {API_PATH} from '$lib/index.js'
 
     let blogContent = '';
     let blogTitle = '';
@@ -10,7 +11,7 @@
     $: slug = $page.params.slug;
 
     onMount(async () => {
-        const res = await fetch(`http://localhost:3000/api/blogs/${slug}`);
+        const res = await fetch(`${API_PATH}/blogs/${slug}`);
         const data = await res.json();
         blogContent = await marked(data.content);
         blogTitle = data.title;
@@ -26,7 +27,7 @@
     */
    async function getBlogComments(blogSlug) {
       // fetch comments from the node server
-      const res = await fetch(`http://localhost:3000/api/blogs/${blogSlug}/comments`);
+      const res = await fetch(`${API_PATH}/blogs/${blogSlug}/comments`);
       const comments = await res.json();
       blogCommentJson = comments;
       console.log(comments);
@@ -34,7 +35,7 @@
 
    async function submitComment() {
         const encodedSlug = encodeURIComponent(slug);
-        const res = await fetch(`http://localhost:3000/api/blogs/${encodedSlug}/addComment`, {
+        const res = await fetch(`${API_PATH}/blogs/${encodedSlug}/addComment`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -43,7 +44,7 @@
         });
         if (res.ok) {
             comment = '';
-            // Optionally, refresh comments
+            // Oeptionally, refresh comments
             await getBlogComments(slug);
         } else {
             console.error('Failed to submit comment', res.status, res.statusText);

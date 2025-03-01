@@ -14,76 +14,73 @@ const cors = require('cors');
 const fs = require('node:fs');
 const matter = require('gray-matter');
 const app = server();
-const Database = require('better-sqlite3');
-
-const db = new Database('database.db');
-
-// Create a table for posts if they dont exist
-db.exec(`CREATE TABLE IF NOT EXISTS comments (
-    id INTEGER PRIMARY KEY,
-    postSlug TEXT,
-    comment TEXT,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP    
-)`);
+const { createClient } = require('@supabase/supabase-js');
+const { error } = require('node:console');
 
 // Called to insert a comment with title of post and comment
 
-const insertComment = db.prepare(`INSERT INTO comments (postSlug, comment) VALUES (?, ?)`);
-
 const POSTS_DIR = path.join(__dirname, 'posts');
+
+const supabase = createClient('https://dzqcqtucdqznjvagxmhj.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cWNxdHVjZHF6bmp2YWd4bWhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4MDE5OTUsImV4cCI6MjA1NjM3Nzk5NX0.iUdqHG_dvoEfqndwfgqhz1ikik7H7PPk2okKlz8xlb8');
+
+
 
 app.use(cors());
 app.use(server.json());
 
+function getBlogTitles() {
+    const blogTitles = fs.readdirSync(POSTS_DIR);
+    return blogTitles;
+}
+/**
+ * 
+ * @param {string} title title of the markdown file
+ * @returns {object} returns {slug: title, content: parsedContent}
+ * with the title of the doc and parsed markdown 
+ */
+function getBlogPost(title) {
+    const blogContent = fs.readFileSync(path.join(POSTS_DIR, title), 'utf-8');
+    const parsedContent = matter(blogContent);
+    return {slug: title, content: parsedContent};
+}
+
 //routes
-// gets all blog titles
-app.get('/api/blogs', (req, res) => {
-    const files = fs.readdirSync(POSTS_DIR);
-    const posts = files.map(file => {
-        const filePath = path.join(POSTS_DIR, file);
-        const content = fs.readFileSync(filePath, 'utf-8');
-
-        const {data} = matter(content);
-
-        return {
-            title: data.title,
-            slug: file.replace('.md', '')
-        };
-
-    });
-    res.json(posts);
+app.get('/api/blogTitles', (req, res) => {
+    const blogTitles = getBlogTitles();
+    res.json(blogTitles); // Return the blog titles as a JSON response
 });
-// Gets a single blog content
-app.get('/api/blogs/:slug', (req, res) => {
-    const filePath = path.join(POSTS_DIR, `${req.params.slug}.md`);
 
-    if (!fs.existsSync(filePath)) {
-        res.status(404).json({message: 'Post not found'});
-        return;
-    }
-    const content = fs.readFileSync(filePath, 'utf-8');
-    res.json({content});
+app.get('/api/blogPost/:title', async (req, res) => {
+    const title = req.params.title;
+    const blogPost = getBlogPost(title);
+
+    console.log(blogPost);
+
+    console.log(blogPost.content.content);
+
+    console.log(blogPost.slug);
+
+    // send the blog post to front end database
+    const { data, error } = await supabase
+        .from('blogs')
+        .insert([
+            {
+                slug: blogPost.slug.replace('.md', ''),
+                content: blogPost.content.content,
+                comments: null // comments are nullable
+            }
+        ]);
+    if (error) {
+        console.log(error);
+        res.json({ error: error });
+    } else {
+        console.log('Data inserted successfully: ', data);
+        res.json({ data: data });
+    }     
 });
-// Gets all comments for a blog
-app.get('/api/blogs/:slug/comments', (req, res) => {
-    const response = db.prepare(`SELECT * FROM comments WHERE postSlug = ?`);
-    const comments = response.all(req.params.slug);
-    
-    res.json(comments);
-});
-// add comment handler for blog
-app.post('/api/blogs/:slug/addComment', (req, res) => {
-    const { slug } = req.params;
-    const { comment } = req.body;
 
-    if (!comment) {
-        res.status(400).json({ message: 'Comment is required' });
-        return;
-    }
-
-    insertComment.run(slug, comment);
-    
-    res.json({ message: 'Comment added' });
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // 404 Handler

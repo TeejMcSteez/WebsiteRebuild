@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .blog-title {
+            cursor: pointer;
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Admin Panel</h1>
+    <button id="loadTitles">Load Blog Titles</button>
+    <div id="titlesContainer"></div>
+
+    <script>
+        let titlesArray = [];
+
+        document.getElementById('loadTitles').addEventListener('click', async () => {
+            const response = await fetch('http://localhost:3000/api/blogTitles');
+            titlesArray = await response.json();
+            const titlesContainer = document.getElementById('titlesContainer');
+            titlesContainer.innerHTML = '';
+
+            titlesArray.forEach(title => {
+                const div = document.createElement('div');
+                div.className = 'blog-title';
+                div.textContent = title;
+                div.addEventListener('click', () => {
+                    addBlogPostToDatabase(title);
+                });
+                titlesContainer.appendChild(div);
+            });
+        });
+
+        async function addBlogPostToDatabase(title) {
+            const postResponse = await fetch(`http://localhost:3000/api/blogPost/${title}`);
+            const result = await postResponse.json();
+            if (result.error) {
+                alert('Error: ' + result.error.message);
+            } else {
+                alert('Blog post added to database successfully!');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 <script>
-
+   // Replace localhost with the hetzner IP address
    import { goto } from "$app/navigation";
    import { onMount } from "svelte";
    /**

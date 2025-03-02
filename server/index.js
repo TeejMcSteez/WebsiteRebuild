@@ -5,7 +5,7 @@ const fs = require('node:fs');
 const matter = require('gray-matter');
 const app = server();
 const { createClient } = require('@supabase/supabase-js');
-require('dotenv').config();
+require('dotenv').config(); // unused for now
 
 const POSTS_DIR = path.join(__dirname, 'posts');
 

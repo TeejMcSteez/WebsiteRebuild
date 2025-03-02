@@ -34,8 +34,8 @@
             // Parse comments if they're stored as a string
             try {
                 blogCommentJson = typeof data.comments === 'string' 
-                    ? JSON.parse(data.comments) 
-                    : (data.comments || []);
+                    ? JSON.parse(data.comments) // If comments are in JSON parses it 
+                    : (data.comments || []); // Otherwise, use an empty array or the comments
                 console.log('Parsed comments:', blogCommentJson);
             } catch (e) {
                 console.error('Error parsing comments:', e);
@@ -80,7 +80,7 @@
 </script>
 
 <div id="header" class="bg-zinc-800 flex flex-row justify-between items-center min-w-screen">
-    <h1 class="text-4xl text-white">{blogTitle}</h1>
+    <h1 class="m-5 p-2 text-3xl text-white">{blogTitle}</h1>
     <button on:click={() => history.back()} class="text-3xl bg-zinc-900 text-white hover:bg-red-800 hover:animate-pulse rounded-xl p-5 m-2">Back</button>
 </div>
 

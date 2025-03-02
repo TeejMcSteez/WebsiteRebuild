@@ -22,7 +22,9 @@ require ('dotenv').config();
 // Google OAuth2 config
 const CLIENT_ID = process.env.OAUTH_CLIENT_ID;
 const CLIENT_SECRET = process.env.OAUTH_CLIENT_SECRET;
-const REDIRECT_URI = 'http://localhost:3000/auth/google/callback';
+const REDIRECT_URI = process.env.NODE_ENV === 'production' 
+    ? `http://${process.env.PUBLIC_IP}/auth/google/callback`  // Using public IP
+    : 'http://localhost:3000/auth/google/callback';
 const oauth2Client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 
 // Called to insert a comment with title of post and comment

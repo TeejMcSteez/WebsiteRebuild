@@ -15,7 +15,15 @@ const fs = require('node:fs');
 const matter = require('gray-matter');
 const app = server();
 const { createClient } = require('@supabase/supabase-js');
-const { error } = require('node:console');
+const session = require('express-session');
+const { OAuth2Client } = require('google-auth-library');
+require ('dotenv').config();
+
+// Google OAuth2 config
+const CLIENT_ID = process.env.OAUTH_CLIENT_ID;
+const CLIENT_SECRET = process.env.OAUTH_CLIENT_SECRET;
+const REDIRECT_URI = 'http://localhost:3000/auth/google/callback';
+const oauth2Client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 
 // Called to insert a comment with title of post and comment
 
@@ -23,10 +31,21 @@ const POSTS_DIR = path.join(__dirname, 'posts');
 
 const supabase = createClient('https://dzqcqtucdqznjvagxmhj.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cWNxdHVjZHF6bmp2YWd4bWhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4MDE5OTUsImV4cCI6MjA1NjM3Nzk5NX0.iUdqHG_dvoEfqndwfgqhz1ikik7H7PPk2okKlz8xlb8');
 
-
-
 app.use(cors());
 app.use(server.json());
+app.use(session({
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: false
+}));
+
+// Auth middleware
+const checkAuth = (req, res, next) => {
+    if (!req.session.isAuthenticated) {
+        return res.redirect('/login');
+    }
+    next();
+};
 
 function getBlogTitles() {
     const blogTitles = fs.readdirSync(POSTS_DIR);
@@ -45,6 +64,63 @@ function getBlogPost(title) {
 }
 
 //routes
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'login.html'));
+});
+
+// Initialize Google OAuth2 login
+app.get('/auth/google', (req, res) => {
+    const url = oauth2Client.generateAuthUrl({
+        access_type: 'offline',
+        scope: ['https://www.googleapis.com/auth/userinfo.email']
+    });
+    res.redirect(url);
+});
+
+// Google OAuth2 callback
+app.get('/auth/google/callback', async (req, res) => {
+    try {
+        const { code } = req.query;
+        const { tokens } = await oauth2Client.getToken(code);
+        oauth2Client.setCredentials(tokens);
+
+        // Verify token and get user info
+        const ticket = await oauth2Client.verifyIdToken({
+            idToken: tokens.id_token,
+            audience: CLIENT_ID
+        });
+        const payload = ticket.getPayload();
+        
+        // Here you can check if the email matches your allowed email
+        if (payload.email === 'tjhall047@gmail.com') {
+            req.session.isAuthenticated = true;
+            res.redirect('/admin');
+        } else {
+            res.status(403).send('Unauthorized');
+        }
+    } catch (error) {
+        console.error('Authentication error:', error);
+        res.redirect('/login');
+    }
+});
+
+// Update root route to redirect to admin if authenticated, otherwise to login
+app.get('/', (req, res) => {
+    if (req.session.isAuthenticated) {
+        res.redirect('/admin');
+    } else {
+        res.redirect('/login');
+    }
+});
+
+// Move admin route before the 404 handler
+app.get('/admin', checkAuth, (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
+// Protect all API routes
+app.use('/api', checkAuth);
+
 app.get('/api/blogTitles', (req, res) => {
     const blogTitles = getBlogTitles();
     res.json(blogTitles);
@@ -91,10 +167,6 @@ app.get('/api/blogPost/:title', async (req, res) => {
         console.error(err);
         res.status(500).json({ error: 'Server error' });
     }
-});
-
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // 404 Handler

@@ -28,7 +28,7 @@
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         animate(entry.target, { opacity: [0, 1], y: [50, 0] }, { duration: Math.random()}); // Random duration to make it feel more natural
-                        if (entry.target === sections[5]) {
+                        if (entry.target === sections[1]) {
                             typeAbout();
                         }
                         observer.unobserve(entry.target);
@@ -104,35 +104,44 @@
     </section>
 
     <section bind:this={sections[2]} style="opacity: 0;" class="min-w-screen min-h-screen m-5 p-2 flex flex-col items-center justify-center">
-            <!-- Pictures in scroll sections with the picture section being its own section -->
+
             <section bind:this={sections[3]} style="opacity: 0;" class="m-5 p-2 m-w-80 m-h-80">
-                <img src={distanceDoorSesnsor} alt="Door Sensor">
+                <div class="text-white p-4 m-4 text-center text-3xl bg-zinc-900 rounded-xl">
+                    <h2>I am currently an undergraduate student at The University of North Carolina at Charlotte majoring in Computer Science</h2>
+                    <h2>I am undecided between software development and cybersecurity as my major, as  I feel web devs must know cybersecurity and researchers/cybersecurity specialist should know some programming</h2>
+                </div>
             </section>
 
             <section bind:this={sections[4]} style="opacity: 0;" class="m-5 p-2 m-w-80 m-h-80">
-                <h2>I am currently an undergraduate student at The University of North Carolina at Charlotte majoring in Computer Science</h2>
-                <h2>I am undecided between software development and cybersecurity as my major, as  I feel web devs must know cybersecurity and researchers/cybersecurity specialist should know some programming</h2>
-                <h2>In my spare time I like to get away from the computer (though not to long) and take trips to the mountains go to trails with my partner and our dog or go out to eat at a good restraunt (my favriote currently is Webbs Custom Kitchen)</h2>
+                <img src={distanceDoorSesnsor} alt="Door Sensor">
             </section>
 
             <section bind:this={sections[5]} style="opacity: 0;" class="m-5 p-2 m-w-80 m-h-80">
+                <div class="text-white p-4 m-4 text-center text-3xl bg-zinc-900 rounded-xl">
+                    <h2>In my spare time I like to get away from the computer (though not to long) and take trips to the mountains go to trails with my partner and our dog or go out to eat at a good restraunt (my favriote currently is Webbs Custom Kitchen)</h2>
+                </div>
+            </section>
+
+            <section bind:this={sections[6]} style="opacity: 0;" class="m-5 p-2 m-w-80 m-h-80">
                 <img src={loginSucc} alt="Successful Login">
             </section>
             
-            <section bind:this={sections[6]} style="opacity: 0;" class="m-5 p-2 m-w-80 m-h-80">
-                <h2>I am currently a junior at UNCC and in my time not spend studying for class I enjoy working on my own software projects trying to integrate material learned in class and build something cool while having fun!</h2>
-                <h2>I love hardware just as much as software! I have built 5 PC's with the two I currently use (one as a server one as my main) both being built by me I also enjoy arduino and ESP32 projects when I find time and brain capacity.</h2>
-                <h2>Fun Fact: The first programming language I learned was Java and I have always disliked it but somehow my favorite is between two widly different programming languages, C(++) and JavaScript!</h2>
+            <section bind:this={sections[7]} style="opacity: 0;" class="m-5 p-2 m-w-80 m-h-80">
+                <div class="text-white p-4 m-4 text-center text-3xl bg-zinc-900 rounded-xl">
+                    <h2>I am currently a junior at UNCC and in my time not spend studying for class I enjoy working on my own software projects trying to integrate material learned in class and build something cool while having fun!</h2>
+                    <h2>I love hardware just as much as software! I have built 5 PC's with the two I currently use (one as a server one as my main) both being built by me I also enjoy arduino and ESP32 projects when I find time and brain capacity.</h2>
+                    <h2>Fun Fact: The first programming language I learned was Java and I have always disliked it but somehow my favorite is between two widly different programming languages, C(++) and JavaScript!</h2>
+                </div>
             </section>
             
-            <section bind:this={sections[7]} style="opacity: 0;" class="m-5 p-2 m-w-80 m-h-80">
+            <section bind:this={sections[8]} style="opacity: 0;" class="m-5 p-2 m-w-80 m-h-80">
                 <img src={exampleSRSM} alt="SRSM">
             </section>
     </section>
 
     <div id="line" class="m-px p-px bg-red-800 min-w-screen"></div>
 
-    <section bind:this={sections[8]} style="opacity: 0;" class="m-5 p-2 flex flex-col items-center justify-center">
+    <section bind:this={sections[9]} style="opacity: 0;" class="m-5 p-2 flex flex-col items-center justify-center">
         <div id="footer" class="m-4 p-4 bg-zinc-900 rounded-xl text-white text-center text-xl">
             <h2>Thank you for visiting my website!</h2>
             <h2>Feel free to check out my contact page for more information!</h2>

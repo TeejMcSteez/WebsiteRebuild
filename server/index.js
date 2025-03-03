@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const path = require('node:path');
 const server = require('express');
 const cors = require('cors');
@@ -5,7 +7,14 @@ const fs = require('node:fs');
 const matter = require('gray-matter');
 const app = server();
 const { createClient } = require('@supabase/supabase-js');
-require('dotenv').config(); // unused for now
+const {OAuth2Client} = require('google-auth-library');
+
+// Update OAuth client initialization
+const client = new OAuth2Client({
+    clientId: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    redirectUri: 'http://localhost:3000'
+});
 
 const POSTS_DIR = path.join(__dirname, 'posts');
 
@@ -13,6 +22,11 @@ const supabase = createClient('https://dzqcqtucdqznjvagxmhj.supabase.co', 'eyJhb
 
 app.use(cors());
 app.use(server.json());
+
+// Authentication middleware
+const requireAuth = async (req, res, next) => {
+    // use jwt or local storage to properly authenticate the user
+};
 
 function getBlogTitles() {
     const blogTitles = fs.readdirSync(POSTS_DIR);
@@ -26,16 +40,20 @@ function getBlogPost(title) {
 }
 
 // Routes
-app.get('/', (req, res) => {
+app.get('/', requireAuth, (req, res) => {
     res.sendFile(path.join(__dirname, 'admin.html'));
 });
+// Add authing route handling for google login
+app.get('/api/google/auth', async (req, res) => {
 
-app.get('/api/blogTitles', (req, res) => {
+});
+
+app.get('/api/blogTitles', requireAuth, (req, res) => {
     const blogTitles = getBlogTitles();
     res.json(blogTitles);
 });
 
-app.get('/api/database/titles', async (req, res) => {
+app.get('/api/database/titles', requireAuth, async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('blogs')
@@ -49,7 +67,7 @@ app.get('/api/database/titles', async (req, res) => {
     }
 });
 
-app.get('/api/blogPost/:title', async (req, res) => {
+app.get('/api/blogPost/:title', requireAuth, async (req, res) => {
     try {
         const title = req.params.title;
         const blogPost = getBlogPost(title.concat('.md'));
@@ -76,6 +94,11 @@ app.get('/api/blogPost/:title', async (req, res) => {
         console.error(err);
         res.status(500).json({ error: 'Server error' });
     }
+});
+
+// Add login page route
+app.get('/login.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'login.html'));
 });
 
 // 404 Handler

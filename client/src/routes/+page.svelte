@@ -89,7 +89,7 @@
 
 </script>
 
-<div id="body" class="bg-zinc-400 overflow-auto">
+<div id="body" class="bg-slate-800 overflow-auto">
 
     <div id="headerSection" class="bg-black flex flex-row justify-between items-center p-8">
         <h1 class="sm:text-xl text-3xl font-bold text-white">Tommy Halls Website</h1>
@@ -102,7 +102,7 @@
     <!-- Figure out how I want sectioning, Depending on how I want to the website to feel -->
     <section bind:this={sections[0]} style="opacity: 0;" class="min-w-screen min-h-screen m-5 p-2 flex flex-col items-center justify-center">
         <div id="container" class="m-4 p-2 bg-zinc-900 rounded-xl relative">
-            <img src={me} alt="Me" class="absolute top-0 right-0 w-32 h-32 rounded-full border-4 border-none transform translate-x-1/4 -translate-y-1/4 z-8">
+            <img src={me} alt="Me" class="absolute top-0 right-0 w-32 h-32 rounded-full border-4 border-none transform translate-x-1/4 -translate-y-1/4 sm:translate-x-1/2 sm:-translate-y-1/2 z-8">
             <div id="intro" class="text-white p-4 m-4 text-center">
                 <h2 class="m-4 text-2xl">Hello my name is Tommy Hall!</h2>
                 <h2 class="m-4 text-2xl">I am currently a student at UNCC</h2>
@@ -115,7 +115,7 @@
 
     <section bind:this={sections[1]} style="opacity: 0;" id="aboutSection" class="min-w-32 min-h-32 flex flex-col items-center justify-center bg-slate-900">
         <div id="AboutMeHeader" class="m-px p-4 rounded-xl bg-zinc-900 text-white text-4xl text-center">
-            <h1 id="aboutMeTag">Loading Typewriter . . .</h1>
+            <h1  id="aboutMeTag">Loading Typewriter . . .</h1>
         </div>
     </section>
 
@@ -157,7 +157,7 @@
 
     <div id="line" class="m-px p-px bg-red-800 min-w-screen"></div>
 
-    <section bind:this={sections[9]} style="opacity: 0;" class="m-5 p-2 flex flex-col items-center justify-center bg-zinc-800 rounded-xl">
+    <section bind:this={sections[9]} style="opacity: 0;" class="mt-5 mb-5 p-2 flex flex-col items-center justify-center bg-slate-900">
         <div id="footer" class="m-4 p-4 bg-zinc-900 rounded-xl text-white text-center text-xl hover:motion-safe:animate-bounce">
             <h2>Thank you for visiting my website!</h2>
             <h2>Feel free to check out my contact page for more information!</h2>

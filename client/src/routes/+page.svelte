@@ -2,18 +2,20 @@
     /**
      * TODO: Implement the following features to enhance the website:
      * Most Important
-     * 1. Add hover effects to project cards and interactive elements
-     * 2. Implement simple scroll-triggered fade-in animations for content
+     * 1. Add hover effects to project cards and interactive elements ✅
+     * 2. Implement simple scroll-triggered fade-in animations for content ✅
      * 3. Create a dedicated "Projects" section with proper heading
      * 4. Organize projects in structured cards with consistent formatting
-     * 5. Add a "Back to Top" button that appears when scrolling down
-     * 6. Improve spacing and typography in project descriptions
+     * 5. Add a "Back to Top" button that appears when scrolling down ✅
+     * 6. Improve spacing and typography in project descriptions 
      * Semi Important
      * 7. Create staggered animations for project cards as they enter viewport
-     * 8. Implement a skills section with animated progress bars
+     * 8. Implement a skills section with animated progress bars [working on] 🚧
+     *   8a. Add admin functionality to my home page to access my supabase database to add new thinks im working on and their values
+     *   8b. After adding that add fetching functionality to get the values from the database and display them in the progress bars
      * 9. Add sorting/filtering options for projects by category
      * 10. Create a scrollspy that highlights current section in navigation
-     * 11. Add parallax scrolling effects for background elements
+     * 11. Add parallax scrolling effects for background elements [working on] 🚧
      * 12. Implement smooth transitions between sections
      * Most Optional
      * 13. Create a dark/light mode toggle with theme persistence
@@ -153,17 +155,92 @@
             <section bind:this={sections[8]} style="opacity: 0;" class="m-5 p-2 m-w-80 m-h-80">
                 <img src={exampleSRSM} class="hover:-translate-y-6" alt="SRSM">
             </section>
+            <section>
+                <div class="bg-zinc-900 rounded-xl hover:motion-safe:-translate-y-4 p-4 m-4">
+                    <h1 class="text-white text-2xl">XP Bar for Current Skills I'm Workin On</h1>
+                </div>
+            </section>
+            <!-- Add admin functionality using node and supabase or something else so I can add new things Im working on and change the values much easier than this -->
+            <section bind:this={sections[9]} style="opacity: 0;" class="m-5 p-2 grid grid-cols-2 gap-4 w-full max-w-4xl">
+                
+                <!-- First Progress Bar -->
+                <div class="bg-zinc-900 p-4 rounded-xl hover:motion-safe:-translate-y-4">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-rose-600 bg-slate-500">
+                            Write Another Blog Post
+                        </span>
+                        <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-rose-600 bg-slate-500">
+                            0%
+                        </span>
+                    </div>
+                    <div class="w-full h-2 bg-gray-200 rounded-full">
+                        <div class="h-full rounded-full bg-rose-600" style="width:0%"></div>
+                    </div>
+                </div>
+
+                <!-- Second Progress Bar -->
+                <div class="bg-zinc-900 p-4 rounded-xl hover:motion-safe:-translate-y-4">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-rose-600 bg-slate-500">
+                            Data Structures and Algorithms
+                        </span>
+                        <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-rose-600 bg-slate-500">
+                            35%
+                        </span>
+                    </div>
+                    <div class="w-full h-2 bg-gray-200 rounded-full">
+                        <div class="h-full rounded-full bg-rose-600" style="width:35%"></div>
+                    </div>
+                </div>
+
+                <!-- Third Progress Bar -->
+                <div class="bg-zinc-900 p-4 rounded-xl hover:motion-safe:-translate-y-4">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-rose-600 bg-slate-500">
+                            My Website
+                        </span>
+                        <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-rose-600 bg-slate-500">
+                            60%
+                        </span>
+                    </div>
+                    <div class="w-full h-2 bg-gray-200 rounded-full">
+                        <div class="h-full rounded-full bg-rose-600" style="width:60%"></div>
+                    </div>
+                </div>    
+                <!-- Fourth Progress Bar -->
+                <div class="bg-zinc-900 p-4 rounded-xl hover:motion-safe:-translate-y-4">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-rose-600 bg-slate-500">
+                            SupaBase Basics
+                        </span>
+                        <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-rose-600 bg-slate-500">
+                            20%
+                        </span>
+                    </div>
+                    <div class="w-full h-2 bg-gray-200 rounded-full">
+                        <div class="h-full rounded-full bg-rose-600" style="width:20%"></div>
+                    </div>
+                </div>
+                 
+            </section>
     </section>
 
     <div id="line" class="m-px p-px bg-red-800 min-w-screen"></div>
 
-    <section bind:this={sections[9]} style="opacity: 0;" class="mt-5 mb-5 p-2 flex flex-col items-center justify-center bg-slate-900">
+    <section bind:this={sections[10]} style="opacity: 0;" class="flex flex-col items-center justify-center bg-rose-500">
         <div id="footer" class="m-4 p-4 bg-zinc-900 rounded-xl text-white text-center text-xl hover:motion-safe:animate-bounce">
             <h2>Thank you for visiting my website!</h2>
-            <h2>Feel free to check out my contact page for more information!</h2>
+            <h2>Feel free to check out my contact page for more information as well as my blog!</h2>
         </div>
 
         <button onclick={scrollToTop} class="text-center bg-zinc-900 text-white p-4 m-4 rounded-xl justify-center items-center hover:bg-red-800 hover:animate-pulse">Scroll To Top</button>
+    </section>
+
+    <section bind:this={sections[11]} style="opacity: 0;">
+        <div class="flex flex-col items-center justify-center bg-black text-white text-xs p-2">
+            <footer>Hosted On <a href="https://vercel.com/" target="_blank"><b>Vercel</b></a> Domain with <a href="https://namecheap.com/" target="_blank"><b>NameCheap</b></a></footer>
+            <footer><a href="https://github.com/TeejMcSteez/WebsiteRebuild" target="_blank">This Website on <b>Github</b></a></footer>
+        </div>
     </section>
 
 </div>

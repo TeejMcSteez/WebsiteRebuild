@@ -15,7 +15,7 @@
      *   8b. After adding that add fetching functionality to get the values from the database and display them in the progress bars
      * 9. Add sorting/filtering options for projects by category
      * 10. Create a scrollspy that highlights current section in navigation
-     * 11. Add parallax scrolling effects for background elements [working on] 🚧
+     * 11. Add parallax scrolling effects for background elements ✅
      * 12. Implement smooth transitions between sections
      * Most Optional
      * 13. Create a dark/light mode toggle with theme persistence
@@ -64,11 +64,22 @@
             }
             console.log(scroll);
         });
-    });
+    }); // End onMount
+
+    // Functions
     
     function scrollToTop() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        // After scrolling to the top will pulse the contact button
+        const contactButton = document.querySelector('a[href="/contact"]');
+        if (contactButton) {
+            contactButton.classList.add('animate-pulse');
+            setTimeout(() => {
+                contactButton.classList.remove('animate-pulse');
+            }, 2500);
+        }
     }
+
     // Types header to the about me section when user scrolls to it
     function typeAbout() {
         const aboutChar = "About Me";
@@ -115,7 +126,7 @@
 
     <section bind:this={sections[0]} style="opacity: 0;" class="min-w-screen min-h-screen m-5 p-2 flex flex-col items-center justify-center">
         <div id="container" class="m-4 p-2 bg-zinc-900 rounded-xl relative">
-            <img src={me} alt="Me" class="absolute top-0 right-0 w-32 h-32 rounded-full border-4 border-none transform translate-x-1/4 -translate-y-1/4 sm:translate-x-1/2 sm:-translate-y-1/2 z-8">
+            <img src={me} alt="Me" class="absolute top-0 right-0 w-32 h-32 rounded-full border-4 border-none transform translate-x-1/4 -translate-y-1/2 z-8">
             <div id="intro" class="text-white p-4 m-4 text-center">
                 <h2 class="m-4 text-2xl">Hello my name is Tommy Hall!</h2>
                 <h2 class="m-4 text-2xl">I am currently a student at UNCC</h2>
@@ -182,10 +193,10 @@
                     <!-- First Progress Bar -->
                     <div class="bg-zinc-900 p-4 rounded-xl hover:motion-safe:-translate-y-4">
                         <div class="flex justify-between mb-2">
-                            <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-rose-600 bg-slate-500">
+                            <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-white bg-slate-500">
                                 Write Another Blog Post (For Fun)
                             </span>
-                            <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-rose-600 bg-slate-500">
+                            <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-white bg-slate-500">
                                 0%
                             </span>
                         </div>
@@ -197,10 +208,10 @@
                     <!-- Second Progress Bar -->
                     <div class="bg-zinc-900 p-4 rounded-xl hover:motion-safe:-translate-y-4">
                         <div class="flex justify-between mb-2">
-                            <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-rose-600 bg-slate-500">
+                            <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-white bg-slate-500">
                                 Data Structures and Algorithms (Course)
                             </span>
-                            <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-rose-600 bg-slate-500">
+                            <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-white bg-slate-500">
                                 35%
                             </span>
                         </div>
@@ -212,10 +223,10 @@
                     <!-- Third Progress Bar -->
                     <div class="bg-zinc-900 p-4 rounded-xl hover:motion-safe:-translate-y-4">
                         <div class="flex justify-between mb-2">
-                            <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-rose-600 bg-slate-500">
+                            <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-white bg-slate-500">
                                 My Website (Professional/Practice)
                             </span>
-                            <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-rose-600 bg-slate-500">
+                            <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-white bg-slate-500">
                                 60%
                             </span>
                         </div>
@@ -226,10 +237,10 @@
                     <!-- Fourth Progress Bar -->
                     <div class="bg-zinc-900 p-4 rounded-xl hover:motion-safe:-translate-y-4">
                         <div class="flex justify-between mb-2">
-                            <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-rose-600 bg-slate-500">
+                            <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-white bg-slate-500">
                                 SupaBase Basics (New Technology)
                             </span>
-                            <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-rose-600 bg-slate-500">
+                            <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-white bg-slate-500">
                                 20%
                             </span>
                         </div>

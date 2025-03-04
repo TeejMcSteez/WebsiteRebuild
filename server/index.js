@@ -7,14 +7,6 @@ const fs = require('node:fs');
 const matter = require('gray-matter');
 const app = server();
 const { createClient } = require('@supabase/supabase-js');
-const {OAuth2Client} = require('google-auth-library');
-
-// Update OAuth client initialization
-const client = new OAuth2Client({
-    clientId: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    redirectUri: 'http://localhost:3000'
-});
 
 const POSTS_DIR = path.join(__dirname, 'posts');
 
@@ -40,20 +32,20 @@ function getBlogPost(title) {
 }
 
 // Routes
-app.get('/', requireAuth, (req, res) => {
+app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin.html'));
 });
 // Add authing route handling for google login
 app.get('/api/google/auth', async (req, res) => {
-
+    
 });
 
-app.get('/api/blogTitles', requireAuth, (req, res) => {
+app.get('/api/blogTitles', (req, res) => {
     const blogTitles = getBlogTitles();
     res.json(blogTitles);
 });
 
-app.get('/api/database/titles', requireAuth, async (req, res) => {
+app.get('/api/database/titles', async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('blogs')
@@ -67,7 +59,7 @@ app.get('/api/database/titles', requireAuth, async (req, res) => {
     }
 });
 
-app.get('/api/blogPost/:title', requireAuth, async (req, res) => {
+app.get('/api/blogPost/:title', async (req, res) => {
     try {
         const title = req.params.title;
         const blogPost = getBlogPost(title.concat('.md'));

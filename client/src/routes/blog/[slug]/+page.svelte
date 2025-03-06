@@ -107,3 +107,8 @@
         <button on:click={() => submitComment()} class="mt-2 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-700">Submit</button>
     </div>
 </div>
+
+<!-- Back to Top Button -->
+<button on:click={() => scrollTo({top: 0, behavior: "smooth"})} class="fixed bottom-4 right-4 bg-zinc-900 text-white px-4 py-2 rounded shadow-lg hover:bg-red-800 transition">
+    Back to Top
+</button>

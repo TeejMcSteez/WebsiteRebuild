@@ -144,7 +144,7 @@
           <div bind:this={sections[8]} style="opacity: 0;" class="bg-zinc-900 rounded-xl p-6 shadow-lg hover:-translate-y-2 transform transition">
             <img src={exampleSRSM} alt="SRSM" class="w-full h-48 object-cover rounded-md mb-4">
             <h3 class="text-2xl font-semibold mb-2">SRSM Project</h3>
-            <p class="text-sm">Description of the SRSM project.</p>
+            <p class="text-sm">Main Page of readings for the Secure Remote System Monitor</p>
           </div>
           <!-- Additional project cards can be added here -->
         </div>

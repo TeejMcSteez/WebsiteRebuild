@@ -29,6 +29,20 @@ function signToken() {
 // Authentication middleware
 const requireAuth = async (req, res, next) => {
     // use jwt or local storage to properly authenticate the user
+    if (!res.cookie.token) {
+        const token = signToken();
+        res.cookie('token', token, {httpOnly: true});
+        res.redirect('/');
+    } else {
+        const verify = jwt.verify(res.cookie.token);
+
+        if (!verify) {
+            res.redirect('/login.html');
+        } else {
+            res.redirect('/');
+        }
+    }
+
 };
 
 function getBlogTitles() {

@@ -44,6 +44,10 @@ passport.use(new GoogleStrategy({
     callbackURL: '/auth/google/callback'
 },
 (accessToken, refreshToken, profile, done) => {
+    const email = profile.emails && profile.emails.length > 0 ? profile.emails[0].value : null;
+    if(email != process.env.ADMIN) {
+        return done(new Error("Unauthorized email"), null);
+    }
     return done(null, profile);
 }
 ));

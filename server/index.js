@@ -7,6 +7,8 @@ const fs = require('node:fs');
 const matter = require('gray-matter');
 const app = server();
 const { createClient } = require('@supabase/supabase-js');
+const jwt = require('jsonwebtoken');
+const { uid } = require('uid');
 
 const POSTS_DIR = path.join(__dirname, 'posts');
 
@@ -14,6 +16,15 @@ const supabase = createClient('https://dzqcqtucdqznjvagxmhj.supabase.co', 'eyJhb
 
 app.use(cors());
 app.use(server.json());
+
+function signToken() {
+    return jwt.sign({ id: uid()}, // random uid
+        fs.readFileSync(path.join(__dirname, process.env.KEYPATH)), // sign key
+        {
+            expiresIn: '1h', // expires in an hr
+        }
+    );
+}
 
 // Authentication middleware
 const requireAuth = async (req, res, next) => {

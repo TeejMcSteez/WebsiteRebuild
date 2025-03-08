@@ -35,8 +35,65 @@
         <div id="dbTitleContainer"></div>
     </div>
 
+    <div id="inputForm">
+        <h1>Add skills below</h1>
+
+        <form action="input">
+            <input id="skillToAdd" type="text" placeholder="Please Enter the Skill to add." required> 
+            <input id="skillToAddPerc" type="text" placeholder="Enter % of the skill completed." required>
+            <button id="sendNewSkillButton">Send</button>
+        </form>
+
+    </div>
+
+    <div id="updateSkillForm">
+        <h1>Update current skill percentage below</h1>
+        <form action="input">
+            <input id="skillToUpdate" type="text" placeholder="Enter skill name to update" required> 
+            <input id="newPercentage" type="text" placeholder="Enter new percentage" required>
+            <button id="updateSkillButton">Update</button>
+        </form>
+    </div>
+
+    <div class="section">
+        <h2>Current Skills</h2>
+        <button id="loadSkills">Load Skills</button>
+        <div id="skillsContainer"></div>
+    </div>
+
     <script>
         let titlesArray = [];
+
+        document.getElementById('sendNewSkillButton').addEventListener('click',async (e) => {
+            e.preventDefault();
+            const skill = document.getElementById('skillToAdd');
+            const skillPerc = document.getElementById('skillToAddPerc');
+
+            try {
+                const response = await fetch('/api/skills/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        skill: skill.value,
+                        percentage: skillPerc.value
+                    })
+                });
+
+                const result = await response.json();
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+
+                alert('Skill added successfully!');
+                skill.value = '';
+                skillPerc.value = '';
+            } catch (error) {
+                console.error('Error adding skill:', error);
+                alert('Error adding skill: ' + error.message);
+            }
+        });
         
         document.addEventListener('DOMContentLoaded', () => {
             getDatabaseInfo();
@@ -65,6 +122,64 @@
             } catch (error) {
                 console.error('Error loading titles:', error);
                 alert('Error loading titles');
+            }
+        });
+
+        document.getElementById('loadSkills').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/skills/all');
+                const result = await response.json();
+                
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+
+                const skillsContainer = document.getElementById('skillsContainer');
+                skillsContainer.innerHTML = '';
+
+                result.data.forEach(skill => {
+                    const div = document.createElement('div');
+                    div.className = 'blog-title';
+                    div.textContent = `${skill.skill_name}: ${skill.complet_perc}%`;
+                    skillsContainer.appendChild(div);
+                });
+            } catch (error) {
+                console.error('Error loading skills:', error);
+                alert('Error loading skills: ' + error.message);
+            }
+        });
+
+        document.getElementById('updateSkillButton').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const skillName = document.getElementById('skillToUpdate');
+            const newPerc = document.getElementById('newPercentage');
+
+            try {
+                const response = await fetch('/api/skills/updateSkill', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: skillName.value,
+                        perc: newPerc.value
+                    })
+                });
+
+                const result = await response.json();
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+
+                alert('Skill updated successfully!');
+                skillName.value = '';
+                newPerc.value = '';
+                
+                // Refresh the skills display
+                document.getElementById('loadSkills').click();
+            } catch (error) {
+                console.error('Error updating skill:', error);
+                alert('Error updating skill: ' + error.message);
             }
         });
 

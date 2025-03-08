@@ -128,6 +128,62 @@ app.get('/api/blogPost/:title', async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 });
+// Data for skill frontend
+app.post('/api/skills/add', async (req, res) => {
+    try {
+        const { skill, percentage } = req.body;
+        
+        const { data, error } = await supabase
+            .from('skills')
+            .insert([
+                {
+                    skill_name: skill,
+                    complet_perc: percentage
+                }
+            ])
+            .select();
+
+        if (error) throw error;
+
+        res.json({ success: true, data });
+    } catch (err) {
+        console.error('Error adding skill:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/skills/updateSkill', async (req, res) => {
+    const { name, perc } = req.body;
+
+    try {
+        const { data, error } = await supabase
+            .from('skills')
+            .update({ complet_perc: perc })
+            .eq('skill_name', name)
+            .select();
+        
+        if (error) throw error;
+
+        res.json({ success: true, data });
+    } catch (err) {
+        console.error('Error updating skill:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/api/skills/all', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('skills')
+            .select('*');
+        
+        if (error) throw error;
+        res.json({ success: true, data });
+    } catch (err) {
+        console.error('Error fetching skills:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
 
 // Add login page route
 app.get('/login.html', (req, res) => {

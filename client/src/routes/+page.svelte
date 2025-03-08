@@ -160,7 +160,7 @@
           <div class="bg-zinc-900 p-4 rounded-xl shadow-lg">
             <div class="flex justify-between mb-2">
               <span class="text-xs font-semibold bg-slate-500 rounded-full px-2 py-1">Blog Post Writing</span>
-              <span class="text-xs font-semibold bg-slate-500 rounded-full px-2 py-1">0%</span>
+              <span class="text-xs font-semibold bg-slate-500 rounded-full px-2 py-1">100%</span>
             </div>
             <div class="w-full h-2 bg-gray-200 rounded-full">
               <div class="h-full rounded-full bg-rose-600" style="width: 0%"></div>

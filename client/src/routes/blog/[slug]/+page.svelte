@@ -2,7 +2,6 @@
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { marked } from 'marked';
-    import { isUserAuthed } from '$lib/auth';
 
     /**
      * @type Array<{comment: string, timestamp: string, displayName: string}>
@@ -58,7 +57,6 @@
             }
         }
         await getUser();
-        isAuth = await isUserAuthed();
     });
 
     /**

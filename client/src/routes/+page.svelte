@@ -163,7 +163,7 @@
               <span class="text-xs font-semibold bg-slate-500 rounded-full px-2 py-1">0%</span>
             </div>
             <div class="w-full h-2 bg-gray-200 rounded-full">
-              <div class="h-full rounded-full bg-rose-600" style="width: 0%"></div>
+              <div class="h-full rounded-full bg-rose-600" style="width: 100%"></div>
             </div>
           </div>
           <!-- Progress Bar 2 -->

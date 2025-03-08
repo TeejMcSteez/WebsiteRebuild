@@ -7,6 +7,12 @@ const fs = require('node:fs');
 const matter = require('gray-matter');
 const app = server();
 const { createClient } = require('@supabase/supabase-js');
+const jwt = require('jsonwebtoken');
+const { uid } = require('uid');
+
+const session = require('express-session');
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const POSTS_DIR = path.join(__dirname, 'posts');
 
@@ -14,11 +20,37 @@ const supabase = createClient('https://dzqcqtucdqznjvagxmhj.supabase.co', 'eyJhb
 
 app.use(cors());
 app.use(server.json());
+app.use(session({
+    secret: fs.readFileSync(path.join(__dirname, process.env.KEYPATH)),
+    resave: false,
+    saveUninitialized: true,
+}));
 
-// Authentication middleware
-const requireAuth = async (req, res, next) => {
-    // use jwt or local storage to properly authenticate the user
-};
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Passport setup
+passport.serializeUser((user, done) => {
+    done(null, user);
+});
+
+passport.deserializeUser((obj, done) => {
+    done(null, obj);
+});
+
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: '/auth/google/callback'
+},
+(accessToken, refreshToken, profile, done) => {
+    const email = profile.emails && profile.emails.length > 0 ? profile.emails[0].value : null;
+    if(email != process.env.ADMIN) {
+        return done(new Error("Unauthorized email"), null);
+    }
+    return done(null, profile);
+}
+));
 
 function getBlogTitles() {
     const blogTitles = fs.readdirSync(POSTS_DIR);
@@ -33,11 +65,20 @@ function getBlogPost(title) {
 
 // Routes
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'admin.html'));
+
+    if(req.isAuthenticated()) {
+        res.sendFile(path.join(__dirname, 'admin.html'));
+    } else {
+        res.sendFile(path.join(__dirname, 'login.html'));
+    }
+
 });
 // Add authing route handling for google login
-app.get('/api/google/auth', async (req, res) => {
-    
+app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+app.get('/auth/google/callback', passport.authenticate('google', {failureRedirect: '/login.html'}),
+(req, res) => {
+    res.redirect('/');
 });
 
 app.get('/api/blogTitles', (req, res) => {

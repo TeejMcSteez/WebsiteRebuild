@@ -2,6 +2,7 @@
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { marked } from 'marked';
+    import { isUserAuthed } from '$lib/auth';
 
     /**
      * @type Array<{comment: string, timestamp: string, displayName: string}>
@@ -11,12 +12,20 @@
     let blogTitle = '';
     let comment = '';
     let userDisplayName = 'Anonymous';
+    let isAuth = false;
 
     $: slug = $page.params.slug;
 
     import { createClient } from '@supabase/supabase-js'
     const supabase = createClient('https://dzqcqtucdqznjvagxmhj.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cWNxdHVjZHF6bmp2YWd4bWhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4MDE5OTUsImV4cCI6MjA1NjM3Nzk5NX0.iUdqHG_dvoEfqndwfgqhz1ikik7H7PPk2okKlz8xlb8');
 
+    /**
+     * Fetches blog content and comments from Supabase on component mount.
+     * Parses the blog content using marked and sets up comments.
+     * @async
+     * @function
+     * @returns {Promise<void>}
+     */
     onMount(async () => {
         const { data, error } = await supabase
             .from('blogs')
@@ -49,8 +58,16 @@
             }
         }
         await getUser();
+        isAuth = await isUserAuthed();
     });
 
+    /**
+     * Submits a new comment to the blog post.
+     * Adds the comment to the database and updates the local comment list.
+     * @async
+     * @function
+     * @returns {Promise<void>}
+     */
     async function submitComment() {
         if (!comment.trim()) return;
         
@@ -86,6 +103,13 @@
         }
     }
 
+    /**
+     * Initiates Google OAuth sign-in process.
+     * Redirects user to Google authentication and handles the callback.
+     * @async
+     * @function
+     * @returns {Promise<void>}
+     */
     async function signInWithGoogle() {
         const redirectUri = process.env.NODE_ENV === 'production'
             ? `https://teejmcsteez.com/blog/${slug}`
@@ -101,10 +125,18 @@
             console.error('Error during sign in: ', error);
         } else {
             console.log('oauth: ', data);
+            isAuth = true;
         }
 
     }
-
+    
+    /**
+     * Retrieves the current authenticated user's information.
+     * Updates the userDisplayName with the Google display name if available.
+     * @async
+     * @function
+     * @returns {Promise<void>}
+     */
     async function getUser() {
         const { data: { user }, error} = await supabase.auth.getUser();
 
@@ -147,7 +179,8 @@
     </div>
 </div>
 
-<div class="bg-zinc-800 flex flex-row items-center justify-center">
+<div class="bg-zinc-800 flex flex-col items-center justify-center">
+    <p class="text-white ">You are currently commenting as: {userDisplayName}</p>
     <button class="m-2 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-700" on:click={() => signInWithGoogle()}>Sign in With Google</button>
 </div>
 

@@ -4,12 +4,13 @@
     import { marked } from 'marked';
 
     /**
-     * @type Array<{comment: string, timestamp: string}>
+     * @type Array<{comment: string, timestamp: string, displayName: string}>
     */
     let blogCommentJson;
     let blogContent = '';
     let blogTitle = '';
     let comment = '';
+    let userDisplayName = 'Anonymous';
 
     $: slug = $page.params.slug;
 
@@ -21,10 +22,15 @@
             .from('blogs')
             .select('slug, content, comments')
             .eq('slug', slug)
+            .limit(1)
             .single();
         
         if (error) {
             console.log('Error fetching blog:', error);
+            blogTitle = slug;
+            blogContent = '<h1>Blog not found</h1>';
+        } else if (!data) {
+            console.log('No blog found with the given slug');
             blogTitle = slug;
             blogContent = '<h1>Blog not found</h1>';
         } else {
@@ -42,6 +48,7 @@
                 blogCommentJson = [];
             }
         }
+        await getUser();
     });
 
     async function submitComment() {
@@ -49,7 +56,8 @@
         
         const newComment = { 
             comment: comment.trim(), 
-            timestamp: new Date().toUTCString() 
+            timestamp: new Date().toUTCString(),
+            displayName: userDisplayName
         };
         
         const updatedComments = [...blogCommentJson, newComment];
@@ -79,13 +87,32 @@
     }
 
     async function signInWithGoogle() {
+        const redirectUri = process.env.NODE_ENV === 'production'
+            ? `https://teejmcsteez.com/blog/${slug}`
+            : `http://localhost:5173/blog/${slug}`;
+
         const { data, error } = await supabase.auth.signInWithOAuth({
-            provider: 'google'
+            provider: 'google',
+            options: {
+                redirectTo: redirectUri,
+            },
         })
         if (error) {
             console.error('Error during sign in: ', error);
         } else {
             console.log('oauth: ', data);
+        }
+
+    }
+
+    async function getUser() {
+        const { data: { user }, error} = await supabase.auth.getUser();
+
+        if (error) {
+            console.error('Error retrieving user:', error);
+        } else if (user) {
+            userDisplayName = user.user_metadata.name || 'Anonymous';
+            console.log('Username:', userDisplayName);
         }
     }
 </script>
@@ -103,11 +130,12 @@
 
 <div id="commentWrapper" class="bg-zinc-800 min-w-screen min-h-screen p-10">
     <h2 class="text-2xl text-white underline">Comments</h2>
+    <p class="text-s text-white italic">If you would like your display name to be added sign in with Google with the button below and it uses your gmail display name!</p>
     <div id="commentSection">
         {#each blogCommentJson as comment}
             <div class="bg-zinc-800 p-5 m-5 rounded-md">
                 <p class="text-white">{comment.comment}</p>
-                <footer class="text-white">{comment.timestamp} UTC</footer>
+                <footer class="text-white">{comment.timestamp} UTC - {comment.displayName}</footer>
             </div>
         {/each}
     </div>
@@ -119,8 +147,8 @@
     </div>
 </div>
 
-<div>
-    <button on:click={() => signInWithGoogle()}>Sign in With Google</button>
+<div class="bg-zinc-800 flex flex-row items-center justify-center">
+    <button class="m-2 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-700" on:click={() => signInWithGoogle()}>Sign in With Google</button>
 </div>
 
 <!-- Back to Top Button -->

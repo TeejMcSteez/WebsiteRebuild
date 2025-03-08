@@ -77,6 +77,17 @@
             }
         }
     }
+
+    async function signInWithGoogle() {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+            provider: 'google'
+        })
+        if (error) {
+            console.error('Error during sign in: ', error);
+        } else {
+            console.log('oauth: ', data);
+        }
+    }
 </script>
 
 <div id="header" class="bg-zinc-800 flex flex-row justify-between items-center min-w-screen">
@@ -106,6 +117,10 @@
         <textarea bind:value={comment} class="w-full p-2 rounded-md" rows="4" placeholder="Write your comment here..."></textarea>
         <button on:click={() => submitComment()} class="mt-2 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-700">Submit</button>
     </div>
+</div>
+
+<div>
+    <button on:click={() => signInWithGoogle()}>Sign in With Google</button>
 </div>
 
 <!-- Back to Top Button -->

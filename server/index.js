@@ -185,6 +185,23 @@ app.get('/api/skills/all', async (req, res) => {
     }
 });
 
+app.post('/api/skills/delete', async (req, res) => {
+    const { name } = req.body;
+    try {
+        const { data, error } = await supabase
+            .from('skills')
+            .delete()
+            .eq('skill_name', name)
+            .select();
+        if (error) throw error;
+
+        res.json({success: true, data});
+    } catch (err) {
+        console.error('Error deleting skill: ', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Add login page route
 app.get('/login.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'login.html'));

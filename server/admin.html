@@ -46,12 +46,20 @@
 
     </div>
 
-    <div id="updateSkillForm">
+    <div id="section">
         <h1>Update current skill percentage below</h1>
         <form action="input">
             <input id="skillToUpdate" type="text" placeholder="Enter skill name to update" required> 
             <input id="newPercentage" type="text" placeholder="Enter new percentage" required>
             <button id="updateSkillButton">Update</button>
+        </form>
+    </div>
+
+    <div id="section">
+        <form action="input">
+            <h1>Delete skill from table</h1>
+            <input type="text" placeholder="Skill name to delete" id="skillToDelete" required>
+            <button id="deleteSkill">Delete</button>
         </form>
     </div>
 
@@ -63,6 +71,37 @@
 
     <script>
         let titlesArray = [];
+
+        document.getElementById('deleteSkill').addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            const skill = document.getElementById('skillToDelete').value;
+
+            try {
+                const response = await fetch ('/api/skills/delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: skill
+                    })
+                });
+                const result = await response.json();
+
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+
+                alert('Skill deleted successfully!')
+                document.getElementById('skillToDelete').value = '';
+                // Refresh the skills display
+                document.getElementById('loadSkills').click();
+            } catch (err) {
+                console.error("Error: ", err.message);
+                alert('Error deleting skill: ' + err.message);
+            }
+        });
 
         document.getElementById('sendNewSkillButton').addEventListener('click',async (e) => {
             e.preventDefault();

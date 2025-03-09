@@ -5,7 +5,7 @@
     import exampleSRSM from '$lib/assets/exampleSRSM.png';
     import loginSucc from '$lib/assets/loginSuccesfful.png';
     import me from '$lib/assets/ME.png';
-
+  
     /** @type {HTMLElement[]} */
     let sections = [];
 
@@ -34,7 +34,9 @@
                 body.style.backgroundPositionY = `${scroll / 2}px`;
             }
         });
-    });
+      // Gets skill info
+        getSupabaseSkillData();
+    }); // End mount
 
     function scrollToTop() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -46,6 +48,8 @@
             }, 2500);
         }
     }
+    /** @type {{ skill_name: string, complet_perc: string }[]} */
+    let supabaseData = [];
 
     function typeAbout() {
         const aboutChar = "About Me";
@@ -64,6 +68,20 @@
                 }
             }, timeout);
         }, 500);
+    }
+
+    async function getSupabaseSkillData() {
+      try {
+        const res = await fetch('/api/supabase');
+        const json = await res.json();
+
+        if (!res.ok) {
+          throw new Error(json.error || 'Failed to fetch');
+        }
+        supabaseData = json.data
+      } catch (err) {
+        throw err;
+      }
     }
 </script>
 
@@ -156,46 +174,24 @@
       <div class="max-w-5xl mx-auto px-4">
         <h2 class="text-3xl font-bold text-center mb-8">Current Skills Progress</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
-          <!-- Progress Bar 1 -->
-          <div class="bg-zinc-900 p-4 rounded-xl shadow-lg">
-            <div class="flex justify-between mb-2">
-              <span class="text-xs font-semibold bg-slate-500 rounded-full px-2 py-1">Blog Post Writing</span>
-              <span class="text-xs font-semibold bg-slate-500 rounded-full px-2 py-1">100%</span>
+          <!-- Progress bar from supabase data -->
+          {#if supabaseData.length > 0}
+            {#each supabaseData as skill}
+              <div class="bg-zinc-900 p-4 rounded-xl shadow-lg">
+                <div class="flex justify-between mb-2">
+                  <span class="text-xs font-semibold bg-slate-500 rounded-full px-2 py-1">{skill.skill_name}</span>
+                  <span class="text-xs font-semibold bg-slate-500 rounded-full px-2 py-1">{skill.complet_perc}%</span>
+                </div>
+                <div class="w-full h-2 bg-gray-200 rounded-full">
+                  <div class="h-full rounded-full bg-rose-600" style="width: {skill.complet_perc}%"></div>
+                </div>
+              </div>
+            {/each}
+          {:else}
+            <div class="bg-zinc-900 p-4 rounded-xl shadow-lg text-center">
+              <p class="text-white text-xl">There is currently no skills data! (i.e. I am lazy)</p>
             </div>
-            <div class="w-full h-2 bg-gray-200 rounded-full">
-              <div class="h-full rounded-full bg-rose-600" style="width: 100%"></div>
-            </div>
-          </div>
-          <!-- Progress Bar 2 -->
-          <div class="bg-zinc-900 p-4 rounded-xl shadow-lg">
-            <div class="flex justify-between mb-2">
-              <span class="text-xs font-semibold bg-slate-500 rounded-full px-2 py-1">Data Structures and Algorithms</span>
-              <span class="text-xs font-semibold bg-slate-500 rounded-full px-2 py-1">35%</span>
-            </div>
-            <div class="w-full h-2 bg-gray-200 rounded-full">
-              <div class="h-full rounded-full bg-rose-600" style="width: 35%"></div>
-            </div>
-          </div>
-          <!-- Progress Bar 3 -->
-          <div class="bg-zinc-900 p-4 rounded-xl shadow-lg">
-            <div class="flex justify-between mb-2">
-              <span class="text-xs font-semibold bg-slate-500 rounded-full px-2 py-1">Website Development</span>
-              <span class="text-xs font-semibold bg-slate-500 rounded-full px-2 py-1">60%</span>
-            </div>
-            <div class="w-full h-2 bg-gray-200 rounded-full">
-              <div class="h-full rounded-full bg-rose-600" style="width: 60%"></div>
-            </div>
-          </div>
-          <!-- Progress Bar 4 -->
-          <div class="bg-zinc-900 p-4 rounded-xl shadow-lg">
-            <div class="flex justify-between mb-2">
-              <span class="text-xs font-semibold bg-slate-500 rounded-full px-2 py-1">SupaBase Basics</span>
-              <span class="text-xs font-semibold bg-slate-500 rounded-full px-2 py-1">20%</span>
-            </div>
-            <div class="w-full h-2 bg-gray-200 rounded-full">
-              <div class="h-full rounded-full bg-rose-600" style="width: 20%"></div>
-            </div>
-          </div>
+          {/if}
         </div>
       </div>
     </section>

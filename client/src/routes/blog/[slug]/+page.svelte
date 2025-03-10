@@ -11,7 +11,6 @@
     let blogTitle = '';
     let comment = '';
     let userDisplayName = 'Anonymous';
-    let isAuth = false;
 
     $: slug = $page.params.slug;
 

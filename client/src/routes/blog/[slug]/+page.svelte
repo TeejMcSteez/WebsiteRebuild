@@ -3,6 +3,17 @@
     import { page } from '$app/stores';
     import { marked } from 'marked';
 
+    export let data;
+    /**@type string*/
+    let userDisplayName;
+
+    if (data.error) {
+        userDisplayName = 'Anonymous';
+        console.log('Error occured fetching user: ', data.error);
+    }
+
+    userDisplayName = typeof data.user === 'string' ? data.user : 'Anonymous';
+
     /**
      * @type Array<{comment: string, timestamp: string, displayName: string}>
     */
@@ -10,7 +21,6 @@
     let blogContent = '';
     let blogTitle = '';
     let comment = '';
-    let userDisplayName = 'Anonymous';
 
     $: slug = $page.params.slug;
 
@@ -125,14 +135,26 @@
      */
     async function getUser() {
 
-        const res = await fetch(`/blog/${slug}/api/getUser`);
-        const json = await res.json();
+        
+        // const tokName = localStorage.key(0);
 
-        if (!json.user) {
-            userDisplayName = 'Anonymous';
-        } else {
-            userDisplayName = json.user.user_metadata?.full_name || 'Anonymous';
-        }
+        // if (tokName) {
+        //     const tok = localStorage.getItem(tokName);
+
+        //     const res = await fetch(`/blog/${slug}/api/getUser/${tok}`);
+
+        // } else {
+        //     userDisplayName = 'Anonymous';
+        // }
+
+        // const res = await fetch(`/blog/${slug}/api/getUser`);
+        // const json = await res.json();
+
+        // if (!json.user) {
+        //     userDisplayName = 'Anonymous';
+        // } else {
+        //     userDisplayName = json.user.user_metadata?.full_name || 'Anonymous';
+        // }
         
     }
 </script>
@@ -175,4 +197,4 @@
 <!-- Back to Top Button -->
 <button on:click={() => scrollTo({top: 0, behavior: "smooth"})} class="fixed bottom-4 right-4 bg-zinc-900 text-white px-4 py-2 rounded shadow-lg hover:bg-red-800 transition">
     Back to Top
-</button>
+</button>7

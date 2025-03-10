@@ -15,9 +15,6 @@
 
     $: slug = $page.params.slug;
 
-    import { createClient } from '@supabase/supabase-js'
-    const supabase = createClient('https://dzqcqtucdqznjvagxmhj.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cWNxdHVjZHF6bmp2YWd4bWhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4MDE5OTUsImV4cCI6MjA1NjM3Nzk5NX0.iUdqHG_dvoEfqndwfgqhz1ikik7H7PPk2okKlz8xlb8');
-
     /**
      * Fetches blog content and comments from Supabase on component mount.
      * Parses the blog content using marked and sets up comments.
@@ -26,34 +23,43 @@
      * @returns {Promise<void>}
      */
     onMount(async () => {
-        const { data, error } = await supabase
-            .from('blogs')
-            .select('slug, content, comments')
-            .eq('slug', slug)
-            .limit(1)
-            .single();
-        
-        if (error) {
-            console.log('Error fetching blog:', error);
+
+        const res = await fetch(`/blog/${slug}/api/supabaseBlog`);
+
+        const json = await res.json();
+
+        if (!res.ok) {
+            console.log('Error fetching blog:', json.error.message);
             blogTitle = slug;
             blogContent = '<h1>Blog not found</h1>';
-        } else if (!data) {
-            console.log('No blog found with the given slug');
+        } else if (!json.data) {
+            console.log('Error fetching blog:', json.error.message);
             blogTitle = slug;
             blogContent = '<h1>Blog not found</h1>';
         } else {
-            console.log('Fetched blog data:', data);
-            blogContent = await marked(data.content);
+            const data = json.data;
+
+            console.log('Fetched Data: ', data);
+
+            blogContent = data.content;
             blogTitle = data.slug;
-            // Parse comments if they're stored as a string
             try {
-                blogCommentJson = typeof data.comments === 'string' 
-                    ? JSON.parse(data.comments) // If comments are in JSON parses it 
-                    : (data.comments || []); // Otherwise, use an empty array or the comments
-                console.log('Parsed comments:', blogCommentJson);
-            } catch (e) {
-                console.error('Error parsing comments:', e);
-                blogCommentJson = [];
+                blogCommentJson = typeof data.comments === 'string'
+                    ? JSON.parse(data.comments)
+                    : (data.comments || []);
+                console.log('Parsed comments: ', blogCommentJson);
+            } catch (err) {
+                if (err instanceof Error) {
+                    console.log('Error parsing comments: ', err.message);
+                } else {
+                    console.log('Error parsing comments: ', err);
+                }
+            }
+
+            try {
+                blogContent = await marked(blogContent);
+            } catch (err) {
+                console.log(err);
             }
         }
         await getUser();
@@ -68,32 +74,24 @@
      */
     async function submitComment() {
         if (!comment.trim()) return;
-        
-        const newComment = { 
-            comment: comment.trim(), 
-            timestamp: new Date().toUTCString(),
-            displayName: userDisplayName
-        };
-        
-        const updatedComments = [...blogCommentJson, newComment];
-        
-        const { data, error } = await supabase
-            .from('blogs')
-            .update({
-                comments: JSON.stringify(updatedComments) // Stringify before saving
+        const res = await fetch(`/blog/${slug}/api/submitComment`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                comment,
+                userDisplayName,
+                blogCommentJson
             })
-            .eq('slug', slug)
-            .select()
-            .single();
-
-        if (error) {
-            console.log('Error submitting comment:', error);
+        });
+        const result = await res.json();
+        if (!res.ok || result.error) {
+            console.log('Error submitting comment:', result.error);
         } else {
-            // Parse the comments after update
             try {
-                blogCommentJson = typeof data.comments === 'string'
-                    ? JSON.parse(data.comments)
-                    : (data.comments || []);
+                const updatedData = result.data;
+                blogCommentJson = typeof updatedData.comments === 'string'
+                    ? JSON.parse(updatedData.comments)
+                    : (updatedData.comments || []);
                 comment = '';
             } catch (e) {
                 console.error('Error parsing updated comments:', e);
@@ -109,23 +107,13 @@
      * @returns {Promise<void>}
      */
     async function signInWithGoogle() {
-        const redirectUri = process.env.NODE_ENV === 'production'
-            ? `https://teejmcsteez.com/blog/${slug}`
-            : `http://localhost:5173/blog/${slug}`;
-
-        const { data, error } = await supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                redirectTo: redirectUri,
-            },
-        })
-        if (error) {
-            console.error('Error during sign in: ', error);
+        const res = await fetch(`/blog/${slug}/api/OAuth`);
+        const jsonResponse = await res.json();
+        if (jsonResponse.success && jsonResponse.url) {
+            window.location.href = jsonResponse.url;
         } else {
-            console.log('oauth: ', data);
-            isAuth = true;
+            console.error('Error during sign in: ', jsonResponse.error);
         }
-
     }
     
     /**
@@ -136,13 +124,14 @@
      * @returns {Promise<void>}
      */
     async function getUser() {
-        const { data: { user }, error} = await supabase.auth.getUser();
 
-        if (error) {
-            console.error('Error retrieving user:', error);
-        } else if (user) {
-            userDisplayName = user.user_metadata.name || 'Anonymous';
-            console.log('Username:', userDisplayName);
+        const res = await fetch('/blog/${slug}/api/getUser');
+        const json = await res.json();
+
+        if (!json.user) {
+            userDisplayName = 'Anonymous';
+        } else {
+            userDisplayName = json.user;
         }
     }
 </script>

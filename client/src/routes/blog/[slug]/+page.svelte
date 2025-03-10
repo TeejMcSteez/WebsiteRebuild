@@ -10,8 +10,8 @@
     let blogContent = '';
     let blogTitle = '';
     let comment = '';
-    let userDisplayName = 'Anonymous';
-    let isAuth = false;
+    /** @type {string}*/
+    let userDisplayName;
 
     $: slug = $page.params.slug;
 
@@ -23,6 +23,16 @@
      * @returns {Promise<void>}
      */
     onMount(async () => {
+        // Check if the URL hash contains access token info
+        if (window.location.hash.includes('access_token')) {
+            const params = new URLSearchParams(window.location.hash.substring(1));
+            const token = params.get('access_token');
+            if (token) {
+                // Redirect to endpoint to store the token as a cookie
+                window.location.href = `/blog/${slug}/api/setAccessToken?access_token=${token}`;
+                return;
+            }
+        }
 
         const res = await fetch(`/blog/${slug}/api/supabaseBlog`);
 
@@ -124,14 +134,13 @@
      * @returns {Promise<void>}
      */
     async function getUser() {
-
-        const res = await fetch('/blog/${slug}/api/getUser');
+        const res = await fetch(`/blog/${slug}/api/getUser`);
         const json = await res.json();
 
         if (!json.user) {
             userDisplayName = 'Anonymous';
         } else {
-            userDisplayName = json.user;
+            userDisplayName = json.user.user_metadata.name;
         }
     }
 </script>

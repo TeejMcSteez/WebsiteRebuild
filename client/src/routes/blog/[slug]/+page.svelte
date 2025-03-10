@@ -108,6 +108,7 @@
     async function signInWithGoogle() {
         const res = await fetch(`/blog/${slug}/api/OAuth`);
         const jsonResponse = await res.json();
+
         if (jsonResponse.success && jsonResponse.url) {
             window.location.href = jsonResponse.url;
         } else {
@@ -124,14 +125,15 @@
      */
     async function getUser() {
 
-        const res = await fetch('/blog/${slug}/api/getUser');
+        const res = await fetch(`/blog/${slug}/api/getUser`);
         const json = await res.json();
 
         if (!json.user) {
             userDisplayName = 'Anonymous';
         } else {
-            userDisplayName = json.user;
+            userDisplayName = json.user.user_metadata?.full_name || 'Anonymous';
         }
+        
     }
 </script>
 

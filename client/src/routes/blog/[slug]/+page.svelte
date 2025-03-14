@@ -11,7 +11,7 @@
     let blogTitle = '';
     let comment = '';
     /** @type {string}*/
-    let userDisplayName;
+    let userDisplayName = 'Anonymous';
 
     $: slug = $page.params.slug;
 
@@ -23,17 +23,6 @@
      * @returns {Promise<void>}
      */
     onMount(async () => {
-        // Check if the URL hash contains access token info
-        if (window.location.hash.includes('access_token')) {
-            const params = new URLSearchParams(window.location.hash.substring(1));
-            const token = params.get('access_token');
-            if (token) {
-                // Redirect to endpoint to store the token as a cookie
-                window.location.href = `/blog/${slug}/api/setAccessToken?access_token=${token}`;
-                return;
-            }
-        }
-
         const res = await fetch(`/blog/${slug}/api/supabaseBlog`);
 
         const json = await res.json();
@@ -72,7 +61,6 @@
                 console.log(err);
             }
         }
-        await getUser();
     });
 
     /**
@@ -109,40 +97,6 @@
         }
     }
 
-    /**
-     * Initiates Google OAuth sign-in process.
-     * Redirects user to Google authentication and handles the callback.
-     * @async
-     * @function
-     * @returns {Promise<void>}
-     */
-    async function signInWithGoogle() {
-        const res = await fetch(`/blog/${slug}/api/OAuth`);
-        const jsonResponse = await res.json();
-        if (jsonResponse.success && jsonResponse.url) {
-            window.location.href = jsonResponse.url;
-        } else {
-            console.error('Error during sign in: ', jsonResponse.error);
-        }
-    }
-    
-    /**
-     * Retrieves the current authenticated user's information.
-     * Updates the userDisplayName with the Google display name if available.
-     * @async
-     * @function
-     * @returns {Promise<void>}
-     */
-    async function getUser() {
-        const res = await fetch(`/blog/${slug}/api/getUser`);
-        const json = await res.json();
-
-        if (!json.user) {
-            userDisplayName = 'Anonymous';
-        } else {
-            userDisplayName = json.user.user_metadata.name;
-        }
-    }
 </script>
 
 <div id="header" class="bg-zinc-800 flex flex-row justify-between items-center min-w-screen">
@@ -177,7 +131,7 @@
 
 <div class="bg-zinc-800 flex flex-col items-center justify-center">
     <p class="text-white ">You are currently commenting as: {userDisplayName}</p>
-    <button class="m-2 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-700" on:click={() => signInWithGoogle()}>Sign in With Google</button>
+    <button class="m-2 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-700" on:click={alert("Sorry feature is currently broken right now")}>Sign in With Google</button>
 </div>
 
 <!-- Back to Top Button -->

@@ -131,7 +131,7 @@
 
 <div class="bg-zinc-800 flex flex-col items-center justify-center">
     <p class="text-white ">You are currently commenting as: {userDisplayName}</p>
-    <button class="m-2 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-700" on:click={() => signInWithGoogle()}>Sign in With Google</button>
+    <button class="m-2 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-700" on:click={alert("Sorry feature is currently broken right now")}>Sign in With Google</button>
 </div>
 
 <!-- Back to Top Button -->

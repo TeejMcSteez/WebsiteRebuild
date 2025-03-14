@@ -6,12 +6,11 @@
     /**
      * @type Array<{comment: string, timestamp: string, displayName: string}>
     */
-    let blogCommentJson;
+    let blogCommentJson = [];  // Initialize as empty array
     let blogContent = '';
     let blogTitle = '';
     let comment = '';
     /** @type {string}*/
-    let userDisplayName = 'Anonymous';
 
     $: slug = $page.params.slug;
 
@@ -42,16 +41,20 @@
 
             blogContent = data.content;
             blogTitle = data.slug;
-            try {
-                blogCommentJson = typeof data.comments === 'string'
-                    ? JSON.parse(data.comments)
-                    : (data.comments || []);
-                console.log('Parsed comments: ', blogCommentJson);
-            } catch (err) {
-                if (err instanceof Error) {
-                    console.log('Error parsing comments: ', err.message);
-                } else {
-                    console.log('Error parsing comments: ', err);
+            
+            // Safer comment parsing
+            if (data.comments) {
+                try {
+                    if (typeof data.comments === 'string') {
+                        blogCommentJson = JSON.parse(data.comments);
+                    } else if (Array.isArray(data.comments)) {
+                        blogCommentJson = data.comments;
+                    } else {
+                        blogCommentJson = [];
+                    }
+                } catch (err) {
+                    console.error('Error parsing comments:', err);
+                    blogCommentJson = [];
                 }
             }
 
@@ -77,7 +80,6 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 comment,
-                userDisplayName,
                 blogCommentJson
             })
         });
@@ -117,7 +119,7 @@
         {#each blogCommentJson as comment}
             <div class="bg-zinc-800 p-5 m-5 rounded-md">
                 <p class="text-white">{comment.comment}</p>
-                <footer class="text-white">{comment.timestamp} UTC - {comment.displayName}</footer>
+                <footer class="text-white">{comment.timestamp} UTC</footer>
             </div>
         {/each}
     </div>
@@ -127,11 +129,6 @@
         <textarea bind:value={comment} class="w-full p-2 rounded-md" rows="4" placeholder="Write your comment here..."></textarea>
         <button on:click={() => submitComment()} class="mt-2 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-700">Submit</button>
     </div>
-</div>
-
-<div class="bg-zinc-800 flex flex-col items-center justify-center">
-    <p class="text-white ">You are currently commenting as: {userDisplayName}</p>
-    <button class="m-2 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-700" on:click={alert("Sorry feature is currently broken right now")}>Sign in With Google</button>
 </div>
 
 <!-- Back to Top Button -->

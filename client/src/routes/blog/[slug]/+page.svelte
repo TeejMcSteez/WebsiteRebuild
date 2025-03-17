@@ -114,7 +114,6 @@
 
 <div id="commentWrapper" class="bg-zinc-800 min-w-screen min-h-screen p-10">
     <h2 class="text-2xl text-white underline">Comments</h2>
-    <p class="text-s text-white italic">If you would like your display name to be added sign in with Google with the button below and it uses your gmail display name!</p>
     <div id="commentSection">
         {#each blogCommentJson as comment}
             <div class="bg-zinc-800 p-5 m-5 rounded-md">

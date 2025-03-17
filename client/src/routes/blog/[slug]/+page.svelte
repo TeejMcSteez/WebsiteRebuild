@@ -59,7 +59,11 @@
             }
 
             try {
-                blogContent = await marked(blogContent);
+                blogContent = await marked(blogContent, { // Options
+                    async: true, // waits until Promise is fullfilled
+                    gfm: true, // GitHub markdown format 
+                    breaks: true // Adds <br> on \n
+                });
             } catch (err) {
                 console.log(err);
             }
@@ -103,30 +107,32 @@
 
 <div id="header" class="bg-zinc-800 flex flex-row justify-between items-center min-w-screen">
     <h1 class="m-5 p-2 text-3xl text-white">{blogTitle}</h1>
-    <button on:click={() => history.back()} class="text-3xl bg-zinc-900 text-white hover:bg-red-800 hover:animate-pulse rounded-xl p-5 m-2">Back</button>
+    <button on:click={() => history.back()} class="text-3xl bg-zinc-900 text-white hover:bg-red-800 hover:animate-pulse rounded-xl p-3 m-2">Back</button>
 </div>
 
-<div class="bg-zinc-600 min-w-screen min-h-screen p-10">
-    <div id="blogContent" class="text-white text-xl flex flex-col items-center justify-center p-10">
+<div class="dark:bg-zinc-600 bg-white min-w-screen min-h-screen p-10" id="content">
+    <div id="blogContent" class="dark:text-white text-xl flex flex-col items-center justify-center p-10">
         {@html blogContent}
     </div>
 </div>
 
-<div id="commentWrapper" class="bg-zinc-800 min-w-screen min-h-screen p-10">
-    <h2 class="text-2xl text-white underline">Comments</h2>
-    <div id="commentSection">
-        {#each blogCommentJson as comment}
-            <div class="bg-zinc-800 p-5 m-5 rounded-md">
-                <p class="text-white">{comment.comment}</p>
-                <footer class="text-white">{comment.timestamp} UTC</footer>
-            </div>
-        {/each}
-    </div>
-    
-    <div id="addCommentSection" class="p-5">
-        <h2 class="text-2xl text-white">Add a Comment</h2>
-        <textarea bind:value={comment} class="w-full p-2 rounded-md" rows="4" placeholder="Write your comment here..."></textarea>
-        <button on:click={() => submitComment()} class="mt-2 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-700">Submit</button>
+<div id="commentSection">
+    <div id="commentWrapper" class="bg-zinc-800 min-w-screen min-h-screen p-10">
+        <h2 class="text-2xl text-white underline">Comments</h2>
+        <div id="commentSection">
+            {#each blogCommentJson as comment}
+                <div class="bg-zinc-800 p-5 m-5 rounded-md">
+                    <p class="text-white">{comment.comment}</p>
+                    <footer class="text-white">{comment.timestamp} UTC</footer>
+                </div>
+            {/each}
+        </div>
+        
+        <div id="addCommentSection" class="p-5">
+            <h2 class="text-2xl text-white">Add a Comment</h2>
+            <textarea bind:value={comment} class="w-full p-2 rounded-md" rows="4" placeholder="Write your comment here..."></textarea>
+            <button on:click={() => submitComment()} class="mt-2 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-700">Submit</button>
+        </div>
     </div>
 </div>
 
@@ -134,3 +140,14 @@
 <button on:click={() => scrollTo({top: 0, behavior: "smooth"})} class="fixed bottom-4 right-4 bg-zinc-900 text-white px-4 py-2 rounded shadow-lg hover:bg-red-800 transition">
     Back to Top
 </button>
+<!-- To remove overscroll -->
+<style>
+	:global(html, body) {
+		overscroll-behavior: none; /* disables overscroll bounce effect */
+		margin: 0;
+		padding: 0;
+	}
+	:global(body) {
+		background-color: #18181b; /* match background with your design (e.g. bg-zinc-800/600) */
+	}
+</style>

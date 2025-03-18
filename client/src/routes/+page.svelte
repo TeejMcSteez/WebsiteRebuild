@@ -85,7 +85,7 @@
     }
 </script>
 
-<div id="body" class="bg-slate-800 overflow-auto font-sans text-gray-100">
+<div id="body" class="dark:bg-slate-800 bg-sky-200 overflow-auto font-sans text-gray-100">
   <!-- Header Section -->
   <header class="bg-black flex justify-between items-center p-6 shadow-lg sticky top-0 z-50">
     <h1 class="text-3xl font-bold">Tommy Hall's Portfolio</h1>
@@ -112,7 +112,7 @@
     </section>
 
     <!-- About Section with Typewriter Effect -->
-    <section bind:this={sections[1]} style="opacity: 0;" id="aboutSection" class="bg-slate-900 py-12">
+    <section bind:this={sections[1]} style="opacity: 0;" id="aboutSection" class="dark:bg-slate-900 py-12">
       <div class="max-w-3xl mx-auto bg-zinc-900 p-8 rounded-xl shadow-lg">
         <h1 id="aboutMeTag" class="text-4xl font-bold text-center">
           Loading Typewriter . . .
@@ -142,27 +142,27 @@
     </section>
 
     <!-- Projects Section -->
-    <section class="bg-slate-900 py-12">
+    <section class="dark:bg-slate-900 bg-sky-200 py-12">
       <div class="max-w-5xl mx-auto px-4">
-        <h2 class="text-3xl font-bold text-center mb-8">Projects</h2>
+        <h2 class="dark:text-white text-3xl font-bold text-center mb-8 dark:bg-inherit bg-zinc-900 p-2 rounded-xl">Projects</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
           <!-- Project Card 1 -->
           <div bind:this={sections[3]} style="opacity: 0;" class="bg-zinc-900 rounded-xl p-6 shadow-lg hover:-translate-y-2 transform transition">
             <img src={distanceDoorSesnsor} alt="Door Sensor" class="w-full h-48 object-cover rounded-md mb-4">
-            <h3 class="text-2xl font-semibold mb-2">Door Sensor Network</h3>
-            <p class="text-sm">ESP32 Door sensor network with sensor and server ESP32 using ESP-Now protocol.</p>
+            <h3 class="text-2xl font-semibold mb-2 text-gray-300">Door Sensor Network</h3>
+            <p class="text-sm text-white">ESP32 Door sensor network with sensor and server ESP32 using ESP-Now protocol.</p>
           </div>
           <!-- Project Card 2 -->
           <div bind:this={sections[6]} style="opacity: 0;" class="bg-zinc-900 rounded-xl p-6 shadow-lg hover:-translate-y-2 transform transition">
             <img src={loginSucc} alt="Successful Login" class="w-full h-48 object-cover rounded-md mb-4">
-            <h3 class="text-2xl font-semibold mb-2">Remote System Monitor</h3>
-            <p class="text-sm">Login Page of Remote System Monitor.</p>
+            <h3 class="text-2xl font-semibold mb-2 text-gray-300">Remote System Monitor</h3>
+            <p class="text-sm text-white">Login Page of Remote System Monitor.</p>
           </div>
           <!-- Project Card 3 -->
           <div bind:this={sections[8]} style="opacity: 0;" class="bg-zinc-900 rounded-xl p-6 shadow-lg hover:-translate-y-2 transform transition">
             <img src={exampleSRSM} alt="SRSM" class="w-full h-48 object-cover rounded-md mb-4">
-            <h3 class="text-2xl font-semibold mb-2">SRSM Project</h3>
-            <p class="text-sm">Main Page of readings for the Secure Remote System Monitor</p>
+            <h3 class="text-2xl font-semibold mb-2 text-gray-300">SRSM Project</h3>
+            <p class="text-sm text-white">Main Page of readings for the Secure Remote System Monitor</p>
           </div>
           <!-- Additional project cards can be added here -->
         </div>
@@ -170,9 +170,9 @@
     </section>
 
     <!-- Skills / Progress Bars Section -->
-    <section bind:this={sections[9]} style="opacity: 0;" class="bg-slate-900 py-12">
+    <section bind:this={sections[9]} style="opacity: 0;" class="dark:bg-slate-900 bg-sky-200 py-12">
       <div class="max-w-5xl mx-auto px-4">
-        <h2 class="text-3xl font-bold text-center mb-8">Current Skills Progress</h2>
+        <h2 class="text-3xl font-bold text-center mb-8 p-2 rounded-xl dark:text-white dark:bg-inherit bg-zinc-900">Current Skills Progress</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
           <!-- Progress bar from supabase data -->
           {#if supabaseData.length > 0}
@@ -198,7 +198,7 @@
   </main>
 
   <!-- Footer Section -->
-  <footer class="bg-rose-900 py-8">
+  <footer class="bg-rose-500 py-8">
     <div class="max-w-5xl mx-auto px-4 text-center">
       <div id="footer" class="bg-zinc-900 p-6 rounded-xl shadow-lg hover:animate-bounce transition">
         <p class="text-xl">Thank you for visiting my website!</p>

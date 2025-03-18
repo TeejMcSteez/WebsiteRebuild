@@ -1,4 +1,4 @@
-<div class="min-w-screen min-h-screen bg-black flex flex-col items-center justify-center place-items-center">
+<div class="min-w-screen min-h-screen dark:bg-black flex flex-col items-center justify-center place-items-center">
     <div id="button-section" class="flex flex-col p-1 border-t-4 border-l-4 border-red-800">
         <a id ="button" class="w-24 text-center bg-zinc-900 hover:bg-red-600 hover:animate-pulse p-2 m-2 rounded-xl text-white" href="https://snapchat.com/t/J3xsUqHK" target="_blank">Snapchat</a>
         <a id = "button" class="w-24 text-center bg-zinc-900 hover:bg-red-600 hover:animate-pulse p-2 m-2 rounded-xl text-white" href="https://twitter.com/Tj_Hall04" target="_blank">X</a>
